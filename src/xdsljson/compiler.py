@@ -6,8 +6,9 @@ from __future__ import annotations
 from xdsl.context import Context
 from xdsl.dialects import arith, builtin
 
-from xdsljson.structs.block import BaseBlock
-
+from pydantic import BaseModel
+from xdsljson.structs.op_base import BaseOp
+from pydantic import TypeAdapter
 
 def get_context() -> Context:
     """Construit un contexte avec les dialectes requis."""
@@ -17,7 +18,7 @@ def get_context() -> Context:
     return ctx
 
 
-def build_sample_expression() -> BaseBlock:
+def build_sample_expression() -> BaseModel:
     """Construit une petite expression pour démonstration."""
     raw_data = {
         "type": "binary",
@@ -30,7 +31,8 @@ def build_sample_expression() -> BaseBlock:
             "rhs": {"type": "const", "val": 15, "size": 64},
         },
     }
-    return BaseBlock.model_validate(raw_data)
+    
+    return TypeAdapter(BaseOp).validate_python(raw_data)
 
 
 def main():

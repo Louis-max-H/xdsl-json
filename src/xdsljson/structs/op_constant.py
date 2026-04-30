@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 from typing import Literal
+from pydantic import BaseModel
 
-from xdsljson.structs.block import BaseBlock
-
-
-class ConstOp(BaseBlock):
+class ConstOp(BaseModel):
     """Constant value operand."""
 
     type: Literal["const"] = "const"
