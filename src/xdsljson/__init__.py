@@ -13,7 +13,7 @@ class LazyVersion:
         if self._version is None:
             from importlib.metadata import PackageNotFoundError, version
 
-            name = "xdsltemplate"  # TODO: Change this
+            name = "xdsljson"
             try:
                 self._version = version(name)
             except PackageNotFoundError:

@@ -4,32 +4,11 @@ A template for projects using xDSL.
 
 ## Usage
 
-1. Fork this repository
-2. Pick a name for your project
-3. Fill in the blanks:
-   - Rename `src/xdsltemplate` to `src/projectname`
-   - Find all instances of "TODO: " in the project and complete them
-
-     | File | Item to replace | Content |
-     | ---- | --------------- | ------- |
-     | `mkdocs.yml` | `site_name` | Documentation website title |
-     | `mkdocs.yml` | `site_author` | Documentation website authors |
-     | `mkdocs.yml` | `copyright` | Documentation website copyright |
-     | `mkdocs.yml` | `repo_name` | Project name |
-     | `mkdocs.yml` | `repo_url` | Project repository URL |
-     | `mkdocs.yml` | `extra.social.link` | Project repository/organisation URL |
-     | `pyproject.toml` | `project.name` | Project name |
-     | `pyproject.toml` | `project.description` | Project description |
-     | `pyproject.toml` | `project.authors` | Project authors |
-     | `pyproject.toml` | `project.urls.Homepage` | Project homepage URL |
-     | `pyproject.toml` | `project.urls.Source Code` | Project repository URL |
-     | `pyproject.toml` | `project.urls.Issue Tracker` | Project issue tracker URL |
-     | `docs.yml` | `on` | Uncomment to automatically deploy documentation site |
-     | `src/xdsltemplate/__init__.py` | `name` | Replace with name of the project |
-     | `src/xdsltemplate/` | Directory name | Replace with name of the project |
-
-4. Run `make install` to set up your environment
-5. To adopt later template improvements, simply sync with the forked main branch
+```bash
+git clone https://github.com/Louis-max-H/xdsl-json
+make install
+uv run python src/xdsljson/compiler.py 
+```
 
 ## Example project structure
 
@@ -40,9 +19,8 @@ A template for projects using xDSL.
 │   └── reference.md          # Auto-generated source code documentation
 ├── src/
 │   └── xdsltemplate/         # Project source code:
-│       ├── dialects/         # - xDSL dialect implementations
-│       ├── frontend/         # - Parsing and lexing implementations
-│       ├── interpreters/     # - Interpreter implementations
+│       ├── dialects/         # - custom IR dialect implementations
+│       ├── frontend/         # - Parsing and lexing implementations (convert json to xDSL)
 │       └── transforms/       # - Rewriting transformation implementations
 └── tests/                    # All tests, both pytest and filecheck
     └── filecheck/            # filecheck .mlir files
