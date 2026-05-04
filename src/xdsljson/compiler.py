@@ -3,12 +3,12 @@
 
 from __future__ import annotations
 
+from pydantic import TypeAdapter
 from xdsl.context import Context
 from xdsl.dialects import arith, builtin
 
-from pydantic import BaseModel
 from xdsljson.structs.op_base import BaseOp
-from pydantic import TypeAdapter
+
 
 def get_context() -> Context:
     """Construit un contexte avec les dialectes requis."""
@@ -18,21 +18,22 @@ def get_context() -> Context:
     return ctx
 
 
-def build_sample_expression() -> BaseModel:
+def build_sample_expression() -> BaseOp:
     """Construit une petite expression pour démonstration."""
     raw_data = {
         "type": "binary",
         "op": "+",
         "lhs": {"type": "const", "val": 12, "size": 64},
         "rhs": {
-            "type": "binary",
+            "type": "binaryF",
             "op": "*",
             "lhs": {"type": "const", "val": 13, "size": 64},
-            "rhs": {"type": "const", "val": 15, "size": 64},
+            "rhs": {"type": "constF", "val": 15, "size": 64},
         },
     }
-    
-    return TypeAdapter(BaseOp).validate_python(raw_data)
+
+    adapter: TypeAdapter[BaseOp] = TypeAdapter(BaseOp)
+    return adapter.validate_python(raw_data)
 
 
 def main():

@@ -8,12 +8,13 @@ from xdsljson.structs.op_operator import OperatorOp
 
 if TYPE_CHECKING:
     from xdsljson.structs.op_base import BaseOp
+    from xdsljson.structs.op_constantF import ConstFOp
 
 
-class BinaryOp(BaseModel):
+class BinaryFOp(BaseModel):
     """Opération binaire composée de deux opérandes."""
 
-    type: Literal["binary"] = "binary"
+    type: Literal["binaryF"] = "binaryF"
     lhs: BaseOp
-    rhs: BaseOp
+    rhs: ConstFOp
     op: OperatorOp
