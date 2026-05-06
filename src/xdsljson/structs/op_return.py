@@ -11,7 +11,7 @@ from xdsl.parser import IntegerAttr, IntegerType
 from xdsljson.structs.codegen import CodegenOp
 
 
-class ConstOp(CodegenOp):
+class ReturnOp(CodegenResult):
     """Constant value operand."""
 
     type: Literal["const"] = "const"

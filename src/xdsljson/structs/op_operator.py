@@ -1,18 +1,18 @@
 from enum import Enum
 
 
-class OperatorOp(str, Enum):
+class OperatorOp(Enum):
     plusOp = "+"
     minusOp = "-"
     timesOp = "*"
     divideOp = "/"
-    powerOp = "^"
     andOp = "and"
     orOp = "or"
     xorOp = "xor"
-    notOp = "not"
     equalsOp = "=="
+    notEqualsOp = "!="
     gtOp = ">"
     ltOp = "<"
     getOp = ">="
     letOp = "<="
+    affectation = "="

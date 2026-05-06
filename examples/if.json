@@ -1,0 +1,11 @@
+{
+  "type": "if",
+  "cond": {
+    "type": "binary",
+    "op": "<",
+    "lhs": {"type": "const", "val": 4},
+    "rhs": {"type": "const", "val": 5}
+  },
+  "thenBlock": [{"type": "const", "val": 1}],
+  "elseBlock": [{"type": "const", "val": 0}]
+}
