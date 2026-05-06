@@ -8,7 +8,7 @@ from xdsl.dialects.builtin import IndexType, IntegerAttr
 from xdsl.dialects.memref import AllocaOp, LoadOp, StoreOp
 from xdsl.ir import Attribute, OpResult, SSAValue, SSAValues
 
-from xdsljson.structs.codegen import CodegenOp
+from xdsljson.structs.codegen import CodegenResult
 from xdsljson.structs.op_vartype import VarTypeOp
 
 if TYPE_CHECKING:
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 variablesHeap: dict[str, SSAValue] = {}
 
-
+# TODO check this
 def _zero_index(builder: Builder) -> SSAValue:
     """Insère une constante d'index 0 et retourne sa SSAValue."""
     zero = ConstantOp(IntegerAttr(0, IndexType()))
@@ -24,7 +24,7 @@ def _zero_index(builder: Builder) -> SSAValue:
     return zero.results[0]
 
 
-class VarOp(CodegenOp):
+class VarOp(CodegenResult):
     type: Literal["var"] = "var"
     name: str
     varType: VarTypeOp | None
@@ -39,7 +39,7 @@ class VarOp(CodegenOp):
         builder.insert(op)
         return op.results
 
-    def codegenSet(self, value: SSAValue, builder: Builder) -> SSAValue:
+    def codegenSet(self, value: SSAValue, builder: Builder) -> SSAValues[OpResult[Attribute]]:
         if self.name not in variablesHeap:
             alloca = AllocaOp.get(value.type, shape=[1])
             builder.insert(alloca)
@@ -49,4 +49,4 @@ class VarOp(CodegenOp):
         store = StoreOp.get(value, variablesHeap[self.name], [index])
         builder.insert(store)
 
-        return value
+        return store.results

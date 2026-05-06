@@ -4,11 +4,11 @@ from abc import ABC, abstractmethod
 
 from pydantic import BaseModel, ConfigDict
 from xdsl.builder import Builder
-from xdsl.ir import Attribute, OpResult, SSAValue, SSAValues
+from xdsl.ir import Attribute, OpResult, SSAValues
 
 
 # ABC : Abstract Base Class
-class CodegenValue(BaseModel, ABC):
+class CodegenResult(BaseModel, ABC):
     """Mixin fournissant la signature commune de génération."""
 
     # Necessaire pour autoriser les classes externes (xDSL: Builder)
@@ -17,14 +17,20 @@ class CodegenValue(BaseModel, ABC):
 
     # Force les sous-classes à implémenter cette méthode abstraite
     @abstractmethod
-    def codegen(self, builder: Builder) -> SSAValue:
+    def codegen(self, builder: Builder) -> SSAValues[OpResult[Attribute]]:
         """Génère l'opération xDSL et retourne la SSA produite.
         """
         raise NotImplementedError
 
-class CodegenResult(BaseModel, ABC):
-    model_config = ConfigDict()
 
-    @abstractmethod
-    def codegen(self, builder: Builder) -> SSAValues[OpResult[Attribute]]:
-        raise NotImplementedError
+def sameFormat(
+    lhs: SSAValues[OpResult[Attribute]] | None,
+    rhs: SSAValues[OpResult[Attribute]] | None,
+) -> None | tuple[SSAValues[OpResult[Attribute]], SSAValues[OpResult[Attribute]]]:
+    if (
+        lhs is None
+        or rhs is None
+        or len(lhs) != len(rhs)
+    ):
+        return None
+    return lhs, rhs

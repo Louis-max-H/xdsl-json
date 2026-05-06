@@ -10,22 +10,21 @@ from xdsl.builder import Builder
 from xdsl.context import Context
 from xdsl.dialects import arith, builtin, scf
 from xdsl.dialects.builtin import (
-    IntegerType,
     ModuleOp,
 )
-from xdsl.dialects.func import FuncOp
 from xdsl.interpreter import Interpreter
 from xdsl.interpreters import register_implementations
 from xdsl.rewriter import InsertPoint
 
-from xdsljson.structs.base import BaseOp
+from xdsljson.structs.base import BaseValue
+from xdsljson.structs.op_function import FunctionOp
 
 
 # ────── Json to AST ────────────────────────
-def build_sample_ast_json(data: Any) -> BaseOp:
+def build_sample_ast_json(data: Any) -> FunctionOp:
     """Valide les données d'entrée et construit l'AST associé."""
 
-    adapter: TypeAdapter[BaseOp] = TypeAdapter(BaseOp)
+    adapter: TypeAdapter[FunctionOp] = TypeAdapter(BaseValue | FunctionOp)
     return adapter.validate_python(data)
 
 
@@ -33,33 +32,7 @@ def build_sample_ast_json(data: Any) -> BaseOp:
 def get_builder() -> tuple[ModuleOp, Builder]:
     module = ModuleOp([])
     builder = Builder(InsertPoint.at_end(module.body.block))
-
-    # Create the MLIR types for each symbol.
-    arg_types = [IntegerType(64), IntegerType(64)]
-
-    # Create a new function and inserts it inside the module.
-    func = FuncOp("main", (arg_types, [IntegerType(64)]))
-    builder.insert(func)
-
-    # Associate each symbol with its MLIR name.
-    arg_values = {arg: value for arg, value in zip(["a", "b"], func.args)}
-
-    # Set the name for each function argument. This is only to get better names
-    # for IR values.
-    for arg, value in arg_values.items():
-        value.name_hint = arg
-
-    # Set the builder insertion point inside the function.
-    builder.insertion_point = InsertPoint.at_end(func.body.block)
-
-    # Convert the expression into MLIR IR inside the function.
-    # result = emit_op(expr, builder, arg_values)
     return module, builder
-
-    # Insert a return statement at the end of the function.
-    # builder.insert(ReturnOp(result))
-    # return module
-
 
 def run_module(module: ModuleOp):
     ctx = Context()

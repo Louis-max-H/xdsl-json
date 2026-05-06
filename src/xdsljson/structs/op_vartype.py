@@ -30,36 +30,35 @@ class VarTypeOp(Enum):
     f128 = "f128"
 
     def codegen(self) -> IntegerType | AnyFloat:
-        match self.value:
-            case "i64":
+        match self:
+            case VarTypeOp.i64:
                 return IntegerType(64)
-            case "i32":
+            case VarTypeOp.i32:
                 return IntegerType(32)
-            case "i16":
+            case VarTypeOp.i16:
                 return IntegerType(16)
-            case "i8":
+            case VarTypeOp.i8:
                 return IntegerType(8)
-            case "i1":
+            case VarTypeOp.i1:
                 return IntegerType(8)
-            case "I64":
+            case VarTypeOp.I64:
                 return IntegerType(64, Signedness.SIGNLESS)
-            case "I32":
+            case VarTypeOp.I32:
                 return IntegerType(32, Signedness.SIGNLESS)
-            case "I16":
+            case VarTypeOp.I16:
                 return IntegerType(16, Signedness.SIGNLESS)
-            case "I8":
+            case VarTypeOp.I8:
                 return IntegerType(8, Signedness.SIGNLESS)
-            case "I1":
+            case VarTypeOp.I1:
                 return IntegerType(1, Signedness.SIGNLESS)
-            case "f16":
+            case VarTypeOp.f16:
                 return Float16Type()
-            case "f32":
+            case VarTypeOp.f32:
                 return Float32Type()
-            case "f64":
+            case VarTypeOp.f64:
                 return Float64Type()
-            case "f80":
+            case VarTypeOp.f80:
                 return Float80Type()
-            case "f128":
+            case VarTypeOp.f128:
                 return Float128Type()
-
 

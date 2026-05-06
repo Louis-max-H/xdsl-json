@@ -10,15 +10,12 @@ from xdsljson.structs.op_constant import ConstOp
 from xdsljson.structs.op_var import VarOp
 
 # Union discriminé de toutes les opérations connues.
-BaseOp = Annotated[
+BaseValue = Annotated[
     BinaryOp | ConstOp | CondOp | VarOp, Field(discriminator="type")
-]
-BaseOp = Annotated[
-    CondOp | ReturnOp, Field(discriminator="type")
 ]
 
 _types_namespace = {
-    "BaseOp": BaseOp,
+    "BaseValue": BaseValue,
     "BinaryOp": BinaryOp,
     "ConstOp": ConstOp,
     "CondOp": CondOp,

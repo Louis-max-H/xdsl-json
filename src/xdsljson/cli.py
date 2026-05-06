@@ -10,8 +10,6 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-from xdsl.dialects.func import ReturnOp
-from xdsl.ir import SSAValue
 from xdsl.printer import Printer
 
 from xdsljson.compiler import build_sample_ast_json, get_builder, run_module
@@ -69,19 +67,19 @@ def main(argv: list[str] | None = None) -> int:
 
     # ────── Gen AST
     print("Ast using python class")
-    ast = build_sample_ast_json(data)
-    print(ast.model_dump())
+    function_ast = build_sample_ast_json(data)
+    print(function_ast.model_dump())
     print("\n")
 
     # ────── Convert to xDSL
     print("Generating xDSL ast")
     module, builder = get_builder()
-    xDSL_ast: SSAValue | None = ast.codegen(builder)
-    builder.insert(ReturnOp(xDSL_ast))
+    _xDSL_ast = function_ast.codegen(builder)
 
     # ────── Verify
-    module.verify()
     Printer().print_op(module)
+    print("\n")
+    module.verify()
     print("\n")
 
     # ────── Run

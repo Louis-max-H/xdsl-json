@@ -3,26 +3,22 @@ from __future__ import annotations
 from typing import Literal
 
 from xdsl.builder import Builder
-from xdsl.dialects.arith import ConstantOp
-from xdsl.dialects.builtin import IntegerType
-from xdsl.dialects.func import FuncOp
-from xdsl.ir import Attribute, SSAValue
-from xdsl.parser import IntegerAttr
-from xdsl.rewriter import InsertPoint
+from xdsl.dialects.func import FuncOp, ReturnOp
+from xdsl.ir import Attribute, OpResult, SSAValues
 
-from xdsljson.structs.base import BaseOp
+from xdsljson.structs.base import BaseValue
 from xdsljson.structs.block import codegenBlock
-from xdsljson.structs.codegen import CodegenOp
+from xdsljson.structs.codegen import CodegenResult
 from xdsljson.structs.op_var import VarOp
 
 
-class ConstOp(CodegenOp):
+class FunctionOp(CodegenResult):
     type: Literal["function"] = "function"
     name: str
     args: list[VarOp]
-    body: list[BaseOp]
+    body: list[BaseValue]
 
-    def codegen(self, builder: Builder) -> SSAValue:
+    def codegen(self, builder: Builder) -> SSAValues[OpResult[Attribute]]:
 
         # create arg_types
         arg_types: list[Attribute] = []
@@ -31,22 +27,23 @@ class ConstOp(CodegenOp):
                 raise ValueError("Type is mendatory for function argument")
             arg_types.append(arg.varType.codegen())
 
-        # Gen block
-        block = codegenBlock(self.body, builder)
-        yield_op = block.last_op
-        assert yield_op is not None
-
-        # Create function
-        return_types = [result.type for result in yield_op.results]
-        func = FuncOp(self.name, (arg_types, return_types))
+        # create function
+        func = FuncOp(self.name, (arg_types, []))
         builder.insert(func)
 
-        # Set args name
+        # set args name
         for arg, var in zip(func.args, self.args):
             arg.name_hint = var.name
 
-        # Set the builder insertion point inside the function.
-        builder.insertion_point = InsertPoint.at_end(func.body.block)
+        # codegen into function block
+        body_block, last_value = codegenBlock(self.body, func.body.block)
 
-        # Return 0
-        return ConstantOp(IntegerAttr(0, IntegerType(1)))
+        # add ReturnOp
+        if last_value is not None:
+            body_block.add_op(ReturnOp(*last_value))
+        else:
+            body_block.add_op(ReturnOp())
+        func.update_function_type()
+
+        # Return
+        return func.results
