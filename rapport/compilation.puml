@@ -1,6 +1,8 @@
 @startuml compilation
 title Pipeline de compilation
 
+left to right direction
+
 skinparam defaultFontName "Sans-Serif"
 skinparam shadowing false
 skinparam ArrowColor #444444
@@ -19,19 +21,19 @@ skinparam rectangle {
 
 rectangle "Code source\n(à la main)"        as SRC  <<source>>
 rectangle "AST JSON\n(.json)"               as JSON <<artifact>>
-rectangle "AST Python\n(objets Pydantic)"   as PY   <<artifact>>
+rectangle "AST Python\n(class)"   as PY   <<artifact>>
 rectangle "MLIR\n(.mlir)"                   as MLIR <<artifact>>
 rectangle "MLIR simplifié\n(.opt.mlir)"     as OPT  <<artifact>>
 rectangle "LLVM IR\n(.ll)"                  as LL   <<artifact>>
-rectangle "Objet statique\n(.o / .so)"      as OBJ  <<artifact>>
+rectangle "Objet statique\n(.o)"      as OBJ  <<artifact>>
 rectangle "Exécutable\n(.out)"              as OUT  <<target>>
 
-SRC  -down->  JSON : Manuellement
-JSON -down->  PY   : Pydantic
-PY   -down->  MLIR : xDSL
-MLIR -down->  OPT  : mlir-opt
-OPT  -down->  LL   : mlir-translate
-LL   -down->  OBJ  : llc
-OBJ  -down->  OUT  : clang
+SRC  -->  JSON : Manuellement
+JSON -->  PY   : Pydantic
+PY   -->  MLIR : xDSL
+MLIR -->  OPT  : mlir-opt
+OPT  -->  LL   : mlir-translate
+LL   -->  OBJ  : llc
+OBJ  -->  OUT  : clang
 
 @enduml

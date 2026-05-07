@@ -8,13 +8,11 @@ module {
       scf.condition(%1) %arg1, %arg2 : i64, i64
     } do {
     ^bb0(%arg1: i64, %arg2: i64):
-      func.call @print_int(%arg0) : (i64) -> ()
       %1 = arith.addi %arg1, %arg2 : i64
       %2 = arith.addi %arg2, %c1_i64 : i64
+      func.call @print_int(%1) : (i64) -> ()
       scf.yield %1, %2 : i64, i64
     }
-    call @print_int(%0#0) : (i64) -> ()
     return %0#0 : i64
   }
 }
-

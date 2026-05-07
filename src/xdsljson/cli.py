@@ -21,11 +21,11 @@ from xdsljson.pipeline import (
 from xdsljson.utils import print_two_columns
 
 MLIR_OPT_PASSES = [
-    "--loop-invariant-code-motion",  # sort les ops invariantes de boucle
-    "--cse",                         # élimine les sous-expressions communes
-    "--canonicalize",                # folding, simplifications & DCE intégré
-    "--symbol-dce",                  # supprime les symboles inutilisés
-    "--mem2reg",
+    "--loop-invariant-code-motion",  # déplace les ops en dehors des boucles si possible
+    "--cse",  # Eliminate common sub-expressions
+    "--canonicalize",  # factorisation
+    "--symbol-dce",  # dead code elimination
+    "--mem2reg",  # converti en registre
     "--expand-strided-metadata",
     "--normalize-memrefs",
     "--memref-expand",
@@ -34,15 +34,16 @@ MLIR_OPT_PASSES = [
 
 LOWER_TO_LLVM = [
     "--convert-scf-to-cf",
-    "--canonicalize",
     "--convert-cf-to-llvm",
+    "--canonicalize",
     "--convert-func-to-llvm",
     "--finalize-memref-to-llvm",
     "--convert-arith-to-llvm",
     "--canonicalize",
-    "--llvm-request-c-wrappers",
+    # "--llvm-request-c-wrappers",
     "--reconcile-unrealized-casts",
 ]
+
 
 def load_input_file(path: Path) -> Any:
     """Charge un fichier JSON ou YAML et renvoie le dictionnaire correspondant.
@@ -60,6 +61,7 @@ def load_input_file(path: Path) -> Any:
         f"Extension de fichier non supportée : {suffix!r}. "
         "Utilisez .json, .yaml ou .yml."
     )
+
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     """Parse les arguments en ligne de commande."""
@@ -120,7 +122,7 @@ def main(argv: list[str] | None = None) -> int:
     optimized_str = run_mlir_opt(file_mlir, file_optimized, MLIR_OPT_PASSES)
     print_two_columns(
         "───────── Raw MLIR ─────────\n" + mlir_str,
-        "────── Optimized MLIR ──────\n" + optimized_str
+        "────── Optimized MLIR ──────\n" + optimized_str,
     )
     print("\n")
 

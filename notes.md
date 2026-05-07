@@ -36,26 +36,10 @@ Historique:
     - mise à jour des types des blocks *car if et func ne sont pas du même dialect*
     - différences SSAValues[Result] et SSAValue[Attribut], *car block ne renvoie pas forcément de valeurs*
 - 07/07
-    - while
+    - while *tester la modification de variables*
     - lowering to llvm
-    - appeller depuis cpp *pas PIC mais static*
+    - compilation en .s
+    - appeller depuis cpp
     - print (IA)
-    - bug premier argument correspond au nombre de params
-    - structures ??
-
-
-
-(Manuellement)
--> AST JSON
-(avec Pydantic)
--> AST codé en python
-(xDSL)
--> MLIR (.mlir)
-(mlir-opt)
--> MLIR simplifié (.opt.mlir)
-(mlir-translate)
--> LLVM MLIR (.ll)
-(llc)
--> Object statique (.so)
-(clang)
--> Executable (.out)
+- 11/07
+    - structure

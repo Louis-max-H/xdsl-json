@@ -34,10 +34,6 @@ body:
         type: var
         name: max
     thenBlock:
-      - type: print
-        value:
-          type: var
-          name: max
       - type: binary
         op: "="
         lhs:
@@ -66,9 +62,9 @@ body:
           rhs:
             type: const
             val: 1
-  - type: print
-    value:
-      type: var
-      name: toto
+      - type: print
+        value:
+          type: var
+          name: toto
   - type: var
     name: toto

@@ -21,28 +21,25 @@ builtin.module {
       scf.condition(%12)
     } do {
       %13 = arith.constant 0 : index
-      %14 = memref.load %0[%13] : memref<1xi64>
-      func.call @print_int(%14) : (i64) -> ()
+      %14 = memref.load %3[%13] : memref<1xi64>
       %15 = arith.constant 0 : index
-      %16 = memref.load %3[%15] : memref<1xi64>
-      %17 = arith.constant 0 : index
-      %18 = memref.load %6[%17] : memref<1xi64>
-      %19 = arith.addi %16, %18 : i64
-      %20 = arith.constant 0 : index
-      memref.store %19, %3[%20] : memref<1xi64>
-      %21 = arith.constant 0 : index
-      %22 = memref.load %6[%21] : memref<1xi64>
-      %23 = arith.constant 1 : i64
-      %24 = arith.addi %22, %23 : i64
-      %25 = arith.constant 0 : index
-      memref.store %24, %6[%25] : memref<1xi64>
+      %16 = memref.load %6[%15] : memref<1xi64>
+      %17 = arith.addi %14, %16 : i64
+      %18 = arith.constant 0 : index
+      memref.store %17, %3[%18] : memref<1xi64>
+      %19 = arith.constant 0 : index
+      %20 = memref.load %6[%19] : memref<1xi64>
+      %21 = arith.constant 1 : i64
+      %22 = arith.addi %20, %21 : i64
+      %23 = arith.constant 0 : index
+      memref.store %22, %6[%23] : memref<1xi64>
+      %24 = arith.constant 0 : index
+      %25 = memref.load %3[%24] : memref<1xi64>
+      func.call @print_int(%25) : (i64) -> ()
       scf.yield
     }
     %26 = arith.constant 0 : index
     %27 = memref.load %3[%26] : memref<1xi64>
-    func.call @print_int(%27) : (i64) -> ()
-    %28 = arith.constant 0 : index
-    %29 = memref.load %3[%28] : memref<1xi64>
-    func.return %29 : i64
+    func.return %27 : i64
   }
 }

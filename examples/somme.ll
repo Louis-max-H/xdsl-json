@@ -15,13 +15,12 @@ define i64 @xdsl_main(i64 %0) {
 6:                                                ; preds = %2
   %7 = phi i64 [ %3, %2 ]
   %8 = phi i64 [ %4, %2 ]
-  call void @print_int(i64 %0)
   %9 = add i64 %7, %8
   %10 = add i64 %8, 1
+  call void @print_int(i64 %9)
   br label %2
 
 11:                                               ; preds = %2
-  call void @print_int(i64 %3)
   ret i64 %3
 }
 
