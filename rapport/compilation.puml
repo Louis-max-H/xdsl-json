@@ -1,0 +1,37 @@
+@startuml compilation
+title Pipeline de compilation
+
+skinparam defaultFontName "Sans-Serif"
+skinparam shadowing false
+skinparam ArrowColor #444444
+skinparam ArrowFontColor #0066AA
+skinparam ArrowFontStyle italic
+
+skinparam rectangle {
+    BackgroundColor<<artifact>> #EEF5FF
+    BorderColor<<artifact>> #2266AA
+    FontColor<<artifact>> #112244
+    BackgroundColor<<source>>   #FFF6E0
+    BorderColor<<source>>       #B07A00
+    BackgroundColor<<target>>   #E8F8E8
+    BorderColor<<target>>       #2E7D32
+}
+
+rectangle "Code source\n(à la main)"        as SRC  <<source>>
+rectangle "AST JSON\n(.json)"               as JSON <<artifact>>
+rectangle "AST Python\n(objets Pydantic)"   as PY   <<artifact>>
+rectangle "MLIR\n(.mlir)"                   as MLIR <<artifact>>
+rectangle "MLIR simplifié\n(.opt.mlir)"     as OPT  <<artifact>>
+rectangle "LLVM IR\n(.ll)"                  as LL   <<artifact>>
+rectangle "Objet statique\n(.o / .so)"      as OBJ  <<artifact>>
+rectangle "Exécutable\n(.out)"              as OUT  <<target>>
+
+SRC  -down->  JSON : Manuellement
+JSON -down->  PY   : Pydantic
+PY   -down->  MLIR : xDSL
+MLIR -down->  OPT  : mlir-opt
+OPT  -down->  LL   : mlir-translate
+LL   -down->  OBJ  : llc
+OBJ  -down->  OUT  : clang
+
+@enduml

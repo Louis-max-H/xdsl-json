@@ -23,8 +23,8 @@ class PrintOp(CodegenResult):
     automatiquement au module par ``compiler.declare_runtime``. Le symbole
     doit être défini dans le fichier d'appel C++ associé (par exemple
     ``examples/somme.call.cpp``) avec un linkage ``extern "C"`` ; il est
-    résolu dynamiquement à l'exécution via les symboles exportés par le
-    binaire (option ``-rdynamic`` au moment de l'édition de liens).
+    résolu une fois pour toutes au link statique entre le ``.o`` issu du
+    pipeline xDSL et l'objet du fichier d'appel.
     """
 
     type: Literal["print"] = "print"

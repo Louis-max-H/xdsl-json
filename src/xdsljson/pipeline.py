@@ -98,71 +98,43 @@ def convert_to_llvm(input_path: Path, output_path: Path) -> str:
     print("{}: {} lines\n".format(output_path.name, llvm_result.count("\n")))
     return llvm_result
 
-# ────── Compile / link via shared object ────────────────────────
+# ────── Compile / link via static linking ────────────────────────
 def compile_llvm_to_object(input_path: Path, output_path: Path) -> None:
-    """Compile un fichier LLVM IR (``.ll``) en objet PIC (``.o``).
-
-    Utilise ``llc -filetype=obj -relocation-model=pic`` afin que l'objet
-    puisse ensuite être inséré dans un shared object.
+    """Compile un fichier LLVM IR (``.ll``) en objet statique (``.o``).
+    Utilise ``llc -filetype=obj -relocation-model=static``
     """
     llc = require_command("llc")
     llc_cmd = [
         llc,
         "-filetype=obj",
-        "-relocation-model=pic",
+        "-relocation-model=static",
         str(input_path),
         "-o", str(output_path),
     ]
     run_command(llc_cmd, "llc")
 
 
-def build_shared_library(object_path: Path, library_path: Path) -> None:
-    """Construit un shared object (``.so``) à partir d'un objet PIC.
-
-    Les symboles externes non résolus dans ``object_path`` (par exemple
-    ``print_int``) sont attendus dans le binaire qui chargera la lib :
-    voir ``link_executable`` qui passe ``-rdynamic`` pour les exporter.
-    """
-    clangxx = require_command("clang++")
-    cmd = [
-        clangxx, "-shared", "-fPIC",
-        str(object_path),
-        "-o", str(library_path),
-    ]
-    run_command(cmd, "clang++")
-
-
 def link_executable(
     call_source: Path,
-    library_path: Path,
+    object_path: Path,
     output_path: Path,
 ) -> None:
-    """Linke ``call_source`` (C++) avec ``library_path`` pour produire un exécutable.
+    """Linke ``call_source`` (C++) et ``object_path`` en un exécutable statique.
 
-    Utilise ``-L<dir> -l<name>`` ainsi qu'un ``rpath`` ``$ORIGIN`` pour que
-    l'exécutable retrouve la lib partagée dans son propre dossier au runtime.
-
-    ``-rdynamic`` exporte les symboles du binaire dans la table dynamique :
-    indispensable pour que les symboles définis dans ``call_source`` (par
-    ex. ``print_int``) puissent être résolus depuis ``library_path``.
+    ``-no-pie`` est requis pour rester cohérent avec un ``.o`` non-PIC :
+    le binaire produit n'est pas relocalisable, mais évite l'overhead du
+    PIC (registre dédié, indirection GOT/PLT). Plus besoin de ``-rdynamic``
+    ni de ``rpath`` : les symboles externes (ex. ``print_int``) sont
+    résolus une fois pour toutes au link, directement depuis le ``.o`` du
+    fichier d'appel.
     """
     clangxx = require_command("clang++")
-
-    lib_dir = library_path.parent.resolve()
-    lib_stem = library_path.stem
-    if not lib_stem.startswith("lib"):
-        raise ValueError(
-            f"Le nom du shared object doit commencer par 'lib' : {library_path.name}"
-        )
-    lib_name = lib_stem[len("lib"):]
 
     cmd = [
         clangxx,
+        "-no-pie",
+        str(object_path),
         str(call_source),
-        f"-L{lib_dir}",
-        f"-l{lib_name}",
-        "-Wl,-rpath,$ORIGIN",
-        "-rdynamic",
         "-o", str(output_path),
     ]
     run_command(cmd, "clang++")
@@ -173,19 +145,17 @@ def convert_to_executable(
     call_source: Path,
     output_path: Path,
 ) -> Path:
-    """Pipeline complète : ``.ll`` → ``.o`` → ``lib<name>.so`` → exécutable.
+    """Pipeline complète : ``.ll`` → ``.o`` → exécutable statique.
 
     - ``llvm_path`` : fichier LLVM IR généré (``somme.ll``).
     - ``call_source`` : fichier C++ qui appelle ``xdsl_main`` (``somme.call.cpp``).
     - ``output_path`` : chemin de l'exécutable final (``somme.out``).
 
-    Retourne le chemin du shared object construit.
+    Retourne le chemin de l'objet construit.
     """
     object_path = llvm_path.with_suffix(".o")
-    library_path = llvm_path.parent / f"lib{llvm_path.stem}.so"
 
     compile_llvm_to_object(llvm_path, object_path)
-    build_shared_library(object_path, library_path)
 
     if not call_source.is_file():
         print(
@@ -196,5 +166,5 @@ def convert_to_executable(
         )
         sys.exit(1)
 
-    link_executable(call_source, library_path, output_path)
-    return library_path
+    link_executable(call_source, object_path, output_path)
+    return object_path

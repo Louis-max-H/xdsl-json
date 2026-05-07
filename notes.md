@@ -31,15 +31,31 @@ Historique:
     - ajout des variables
     - cli, yaml
 - 06/05
-    - besoin d'un block fonction pour appeller list instructions
-    - besoin typage des variables
-    - différences SSAValues[Result] et SSAValue[Attribut]
-    - mise à jour des types des blocks
-    - (BaseValue, BaseReturn, BaseGeneric)
+    - besoin d'un block fonction *pour appeller list instructions*
+    - besoin typage des variables *pour l'argument de la fonction*
+    - mise à jour des types des blocks *car if et func ne sont pas du même dialect*
+    - différences SSAValues[Result] et SSAValue[Attribut], *car block ne renvoie pas forcément de valeurs*
 - 07/07
     - while
     - lowering to llvm
-    - appeller depuis cpp
+    - appeller depuis cpp *pas PIC mais static*
     - print (IA)
     - bug premier argument correspond au nombre de params
     - structures ??
+
+
+
+(Manuellement)
+-> AST JSON
+(avec Pydantic)
+-> AST codé en python
+(xDSL)
+-> MLIR (.mlir)
+(mlir-opt)
+-> MLIR simplifié (.opt.mlir)
+(mlir-translate)
+-> LLVM MLIR (.ll)
+(llc)
+-> Object statique (.so)
+(clang)
+-> Executable (.out)
