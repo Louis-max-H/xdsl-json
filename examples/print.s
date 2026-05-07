@@ -7,37 +7,24 @@
 main:                                   # @main
 	.cfi_startproc
 # %bb.0:
-	pushq	%r15
-	.cfi_def_cfa_offset 16
-	pushq	%r14
-	.cfi_def_cfa_offset 24
 	pushq	%rbx
-	.cfi_def_cfa_offset 32
-	.cfi_offset %rbx, -32
-	.cfi_offset %r14, -24
-	.cfi_offset %r15, -16
-	movq	%rdi, %r14
-	xorl	%ebx, %ebx
-	xorl	%r15d, %r15d
-	cmpq	%r14, %r15
-	jge	.LBB0_3
-	.p2align	4
-.LBB0_2:                                # =>This Inner Loop Header: Depth=1
-	movq	%r14, %rdi
+	.cfi_def_cfa_offset 16
+	.cfi_offset %rbx, -16
+	movl	$8, %edi
+	callq	malloc@PLT
+	movq	%rax, %rbx
+	movq	$42, (%rax)
+	movl	$42, %edi
 	callq	print_int@PLT
-	addq	%r15, %rbx
-	incq	%r15
-	cmpq	%r14, %r15
-	jl	.LBB0_2
-.LBB0_3:
+	movq	(%rbx), %rbx
+	addq	$8, %rbx
+	movl	$8, %edi
+	callq	malloc@PLT
+	movq	%rbx, (%rax)
 	movq	%rbx, %rdi
 	callq	print_int@PLT
-	movq	%rbx, %rax
+	xorl	%eax, %eax
 	popq	%rbx
-	.cfi_def_cfa_offset 24
-	popq	%r14
-	.cfi_def_cfa_offset 16
-	popq	%r15
 	.cfi_def_cfa_offset 8
 	retq
 .Lfunc_end0:

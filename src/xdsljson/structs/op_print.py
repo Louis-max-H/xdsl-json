@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from xdsljson.structs.base import BaseValue
 
 
-# Nom de la fonction externe (runtime C) qui imprime un entier.
+# Nom de la fonction externe (fournie par le code d'appel C++) qui imprime un entier.
 PRINT_INT_SYMBOL = "print_int"
 
 
@@ -21,8 +21,10 @@ class PrintOp(CodegenResult):
 
     La déclaration ``func.func private @print_int(i64) -> ()`` est ajoutée
     automatiquement au module par ``compiler.declare_runtime``. Le symbole
-    est résolu au moment de l'édition de liens grâce au runtime C
-    ``runtime/runtime.c``.
+    doit être défini dans le fichier d'appel C++ associé (par exemple
+    ``examples/somme.call.cpp``) avec un linkage ``extern "C"`` ; il est
+    résolu dynamiquement à l'exécution via les symboles exportés par le
+    binaire (option ``-rdynamic`` au moment de l'édition de liens).
     """
 
     type: Literal["print"] = "print"

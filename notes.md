@@ -38,5 +38,8 @@ Historique:
     - (BaseValue, BaseReturn, BaseGeneric)
 - 07/07
     - while
-    - compile pipeline
+    - lowering to llvm
+    - appeller depuis cpp
+    - print (IA)
+    - bug premier argument correspond au nombre de params
     - structures ??

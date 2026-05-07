@@ -6,7 +6,7 @@ from xdsl.builder import Builder
 from xdsl.dialects.arith import ConstantOp
 from xdsl.dialects.builtin import IndexType, IntegerAttr
 from xdsl.dialects.func import FuncOp
-from xdsl.dialects.memref import AllocOp, LoadOp, StoreOp
+from xdsl.dialects.memref import AllocaOp, LoadOp, StoreOp
 from xdsl.ir import Attribute, OpResult, SSAValue, SSAValues
 from xdsl.rewriter import InsertPoint
 
@@ -33,7 +33,7 @@ def populateBlockHeap(func: FuncOp):
         assert arg.name_hint is not None
         name = arg.name_hint
 
-        alloca = AllocOp.get(arg.type, shape=[1])
+        alloca = AllocaOp.get(arg.type, shape=[1])
         builder.insert(alloca)
         variablesHeap[name] = alloca.results[0]
 
@@ -60,7 +60,7 @@ class VarOp(CodegenResult):
 
     def codegenSet(self, value: SSAValue, builder: Builder) -> SSAValues[OpResult[Attribute]]:
         if self.name not in variablesHeap:
-            alloca = AllocOp.get(value.type, shape=[1])
+            alloca = AllocaOp.get(value.type, shape=[1])
             builder.insert(alloca)
             variablesHeap[self.name] = alloca.results[0]
 

@@ -21,22 +21,27 @@ from xdsljson.pipeline import (
 from xdsljson.utils import print_two_columns
 
 MLIR_OPT_PASSES = [
+    "--loop-invariant-code-motion",  # sort les ops invariantes de boucle
+    "--cse",                         # élimine les sous-expressions communes
+    "--canonicalize",                # folding, simplifications & DCE intégré
+    "--symbol-dce",                  # supprime les symboles inutilisés
     "--mem2reg",
     "--expand-strided-metadata",
     "--normalize-memrefs",
     "--memref-expand",
     "--fold-memref-alias-ops",
-    "--canonicalize"
 ]
 
 LOWER_TO_LLVM = [
-    "--reconcile-unrealized-casts",
     "--convert-scf-to-cf",
+    "--canonicalize",
     "--convert-cf-to-llvm",
     "--convert-func-to-llvm",
     "--finalize-memref-to-llvm",
     "--convert-arith-to-llvm",
-    "--canonicalize"
+    "--canonicalize",
+    "--llvm-request-c-wrappers",
+    "--reconcile-unrealized-casts",
 ]
 
 def load_input_file(path: Path) -> Any:
@@ -105,6 +110,7 @@ def main(argv: list[str] | None = None) -> int:
     file_optimized = input_path.with_suffix(".mlir.opt")
     file_llvm_mlir = input_path.with_suffix(".llvm.mlir")
     file_llvm = input_path.with_suffix(".ll")
+    file_call = input_path.with_suffix(".call.cpp")
     file_runnable = input_path.with_suffix(".out")
 
     # ────── xDSL to MLIR
@@ -124,8 +130,8 @@ def main(argv: list[str] | None = None) -> int:
     # ────── Translate LLVM-dialect MLIR → LLVM IR textuel (.ll)
     convert_to_llvm(file_llvm_mlir, file_llvm)
 
-    # ────── Compile
-    convert_to_executable(file_llvm, file_runnable)
+    # ────── Compile en shared object puis link avec le .call.cpp
+    convert_to_executable(file_llvm, file_call, file_runnable)
     return 0
 
 

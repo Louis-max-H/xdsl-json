@@ -1,0 +1,21 @@
+module {
+  func.func private @print_int(i64)
+  func.func @main() -> i64 {
+    %c0_i64 = arith.constant 0 : i64
+    %c8_i64 = arith.constant 8 : i64
+    %c0 = arith.constant 0 : index
+    %c42_i64 = arith.constant 42 : i64
+    %alloc = memref.alloc() : memref<1xi64>
+    memref.store %c42_i64, %alloc[%c0] : memref<1xi64>
+    %0 = memref.load %alloc[%c0] : memref<1xi64>
+    call @print_int(%0) : (i64) -> ()
+    %1 = memref.load %alloc[%c0] : memref<1xi64>
+    %2 = arith.addi %1, %c8_i64 : i64
+    %alloc_0 = memref.alloc() : memref<1xi64>
+    memref.store %2, %alloc_0[%c0] : memref<1xi64>
+    %3 = memref.load %alloc_0[%c0] : memref<1xi64>
+    call @print_int(%3) : (i64) -> ()
+    return %c0_i64 : i64
+  }
+}
+

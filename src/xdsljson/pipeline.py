@@ -98,23 +98,103 @@ def convert_to_llvm(input_path: Path, output_path: Path) -> str:
     print("{}: {} lines\n".format(output_path.name, llvm_result.count("\n")))
     return llvm_result
 
-# ────── Lower to LLVM ────────────────────────
-# Chemin vers le runtime C (fournit notamment ``print_int``).
-RUNTIME_C = Path(__file__).resolve().parents[2] / "runtime" / "runtime.c"
+# ────── Compile / link via shared object ────────────────────────
+def compile_llvm_to_object(input_path: Path, output_path: Path) -> None:
+    """Compile un fichier LLVM IR (``.ll``) en objet PIC (``.o``).
 
-
-def convert_to_executable(input_path: Path, output_path: Path):
+    Utilise ``llc -filetype=obj -relocation-model=pic`` afin que l'objet
+    puisse ensuite être inséré dans un shared object.
+    """
     llc = require_command("llc")
-    clang = require_command("clang")
-
-    # Convert to text assembly
-    s_file = str(output_path.with_suffix(".s"))
-    llc_cmd = [llc, str(input_path), "-o", s_file]
+    llc_cmd = [
+        llc,
+        "-filetype=obj",
+        "-relocation-model=pic",
+        str(input_path),
+        "-o", str(output_path),
+    ]
     run_command(llc_cmd, "llc")
 
-    # Link to executable (avec le runtime C s'il est disponible).
-    clang_cmd = [clang, s_file]
-    if RUNTIME_C.is_file():
-        clang_cmd.append(str(RUNTIME_C))
-    clang_cmd.extend(["-o", str(output_path)])
-    run_command(clang_cmd, "clang")
+
+def build_shared_library(object_path: Path, library_path: Path) -> None:
+    """Construit un shared object (``.so``) à partir d'un objet PIC.
+
+    Les symboles externes non résolus dans ``object_path`` (par exemple
+    ``print_int``) sont attendus dans le binaire qui chargera la lib :
+    voir ``link_executable`` qui passe ``-rdynamic`` pour les exporter.
+    """
+    clangxx = require_command("clang++")
+    cmd = [
+        clangxx, "-shared", "-fPIC",
+        str(object_path),
+        "-o", str(library_path),
+    ]
+    run_command(cmd, "clang++")
+
+
+def link_executable(
+    call_source: Path,
+    library_path: Path,
+    output_path: Path,
+) -> None:
+    """Linke ``call_source`` (C++) avec ``library_path`` pour produire un exécutable.
+
+    Utilise ``-L<dir> -l<name>`` ainsi qu'un ``rpath`` ``$ORIGIN`` pour que
+    l'exécutable retrouve la lib partagée dans son propre dossier au runtime.
+
+    ``-rdynamic`` exporte les symboles du binaire dans la table dynamique :
+    indispensable pour que les symboles définis dans ``call_source`` (par
+    ex. ``print_int``) puissent être résolus depuis ``library_path``.
+    """
+    clangxx = require_command("clang++")
+
+    lib_dir = library_path.parent.resolve()
+    lib_stem = library_path.stem
+    if not lib_stem.startswith("lib"):
+        raise ValueError(
+            f"Le nom du shared object doit commencer par 'lib' : {library_path.name}"
+        )
+    lib_name = lib_stem[len("lib"):]
+
+    cmd = [
+        clangxx,
+        str(call_source),
+        f"-L{lib_dir}",
+        f"-l{lib_name}",
+        "-Wl,-rpath,$ORIGIN",
+        "-rdynamic",
+        "-o", str(output_path),
+    ]
+    run_command(cmd, "clang++")
+
+
+def convert_to_executable(
+    llvm_path: Path,
+    call_source: Path,
+    output_path: Path,
+) -> Path:
+    """Pipeline complète : ``.ll`` → ``.o`` → ``lib<name>.so`` → exécutable.
+
+    - ``llvm_path`` : fichier LLVM IR généré (``somme.ll``).
+    - ``call_source`` : fichier C++ qui appelle ``xdsl_main`` (``somme.call.cpp``).
+    - ``output_path`` : chemin de l'exécutable final (``somme.out``).
+
+    Retourne le chemin du shared object construit.
+    """
+    object_path = llvm_path.with_suffix(".o")
+    library_path = llvm_path.parent / f"lib{llvm_path.stem}.so"
+
+    compile_llvm_to_object(llvm_path, object_path)
+    build_shared_library(object_path, library_path)
+
+    if not call_source.is_file():
+        print(
+            f"Erreur : fichier d'appel introuvable : {call_source}\n"
+            f"Crée-le (par exemple {call_source.name}) pour appeler xdsl_main\n"
+            f"et y définir les symboles externes attendus (ex. print_int).",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    link_executable(call_source, library_path, output_path)
+    return library_path
