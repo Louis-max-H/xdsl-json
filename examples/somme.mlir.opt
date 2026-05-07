@@ -1,0 +1,31 @@
+module {
+  func.func @main(%arg0: i64) -> i64 {
+    %c1_i64 = arith.constant 1 : i64
+    %c0_i64 = arith.constant 0 : i64
+    %c0 = arith.constant 0 : index
+    %alloc = memref.alloc() : memref<1xi64>
+    memref.store %arg0, %alloc[%c0] : memref<1xi64>
+    %alloc_0 = memref.alloc() : memref<1xi64>
+    memref.store %c0_i64, %alloc_0[%c0] : memref<1xi64>
+    %alloc_1 = memref.alloc() : memref<1xi64>
+    memref.store %c0_i64, %alloc_1[%c0] : memref<1xi64>
+    scf.while : () -> () {
+      %1 = memref.load %alloc_1[%c0] : memref<1xi64>
+      %2 = memref.load %alloc[%c0] : memref<1xi64>
+      %3 = arith.cmpi slt, %1, %2 : i64
+      scf.condition(%3)
+    } do {
+      %1 = memref.load %alloc_0[%c0] : memref<1xi64>
+      %2 = memref.load %alloc_1[%c0] : memref<1xi64>
+      %3 = arith.addi %1, %2 : i64
+      memref.store %3, %alloc_0[%c0] : memref<1xi64>
+      %4 = memref.load %alloc_1[%c0] : memref<1xi64>
+      %5 = arith.addi %4, %c1_i64 : i64
+      memref.store %5, %alloc_1[%c0] : memref<1xi64>
+      scf.yield
+    }
+    %0 = memref.load %alloc_0[%c0] : memref<1xi64>
+    return %0 : i64
+  }
+}
+

@@ -10,10 +10,34 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-from xdsl.printer import Printer
 
-from xdsljson.compiler import build_sample_ast_json, get_builder, run_module
+from xdsljson.compiler import build_sample_ast_json, get_builder
+from xdsljson.pipeline import (
+    convert_to_executable,
+    convert_to_llvm,
+    run_mlir_opt,
+    xdsl_to_mlir,
+)
+from xdsljson.utils import print_two_columns
 
+MLIR_OPT_PASSES = [
+    "--mem2reg",
+    "--expand-strided-metadata",
+    "--normalize-memrefs",
+    "--memref-expand",
+    "--fold-memref-alias-ops",
+    "--canonicalize"
+]
+
+LOWER_TO_LLVM = [
+    "--reconcile-unrealized-casts",
+    "--convert-scf-to-cf",
+    "--convert-cf-to-llvm",
+    "--convert-func-to-llvm",
+    "--finalize-memref-to-llvm",
+    "--convert-arith-to-llvm",
+    "--canonicalize"
+]
 
 def load_input_file(path: Path) -> Any:
     """Charge un fichier JSON ou YAML et renvoie le dictionnaire correspondant.
@@ -72,19 +96,36 @@ def main(argv: list[str] | None = None) -> int:
     print("\n")
 
     # ────── Convert to xDSL
-    print("Generating xDSL ast")
     module, builder = get_builder()
-    _xDSL_ast = function_ast.codegen(builder)
-
-    # ────── Verify
-    Printer().print_op(module)
-    print("\n")
+    function_ast.codegen(builder)
     module.verify()
+
+    # ────── xDSL to MLIR
+    file_mlir = input_path.with_suffix(".mlir")
+    file_optimized = input_path.with_suffix(".mlir.opt")
+    file_llvm_mlir = input_path.with_suffix(".llvm.mlir")
+    file_llvm = input_path.with_suffix(".ll")
+    file_runnable = input_path.with_suffix(".out")
+
+    # ────── xDSL to MLIR
+    mlir_str = xdsl_to_mlir(module, file_mlir)
+
+    # ────── Optimize MLIR
+    optimized_str = run_mlir_opt(file_mlir, file_optimized, MLIR_OPT_PASSES)
+    print_two_columns(
+        "───────── Raw MLIR ─────────\n" + mlir_str,
+        "────── Optimized MLIR ──────\n" + optimized_str
+    )
     print("\n")
 
-    # ────── Run
-    run_module(module)
+    # ────── Lower to LLVM dialect (MLIR → MLIR @ llvm dialect)
+    run_mlir_opt(file_optimized, file_llvm_mlir, LOWER_TO_LLVM)
 
+    # ────── Translate LLVM-dialect MLIR → LLVM IR textuel (.ll)
+    convert_to_llvm(file_llvm_mlir, file_llvm)
+
+    # ────── Compile
+    convert_to_executable(file_llvm, file_runnable)
     return 0
 
 

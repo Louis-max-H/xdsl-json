@@ -1,0 +1,26 @@
+type: function
+name: main
+args:
+  - type: var
+    name: a
+    varType: i64
+  - type: var
+    name: b
+    varType: i64
+body: 
+  - type: if
+    cond:
+      type: binary
+      op: ">"
+      lhs:
+        type: var
+        name: a
+      rhs:
+        type: var
+        name: b
+    thenBlock:
+      - type: var
+        name: a
+    elseBlock:
+      - type: var
+        name: b

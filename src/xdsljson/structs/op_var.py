@@ -5,8 +5,10 @@ from typing import TYPE_CHECKING, Literal
 from xdsl.builder import Builder
 from xdsl.dialects.arith import ConstantOp
 from xdsl.dialects.builtin import IndexType, IntegerAttr
-from xdsl.dialects.memref import AllocaOp, LoadOp, StoreOp
+from xdsl.dialects.func import FuncOp
+from xdsl.dialects.memref import AllocOp, LoadOp, StoreOp
 from xdsl.ir import Attribute, OpResult, SSAValue, SSAValues
+from xdsl.rewriter import InsertPoint
 
 from xdsljson.structs.codegen import CodegenResult
 from xdsljson.structs.op_vartype import VarTypeOp
@@ -23,11 +25,28 @@ def _zero_index(builder: Builder) -> SSAValue:
     builder.insert(zero)
     return zero.results[0]
 
+def populateBlockHeap(func: FuncOp):
+    block = func.body.block
+    builder = Builder(InsertPoint.at_end(block))
+
+    for arg in func.args:
+        assert arg.name_hint is not None
+        name = arg.name_hint
+
+        alloca = AllocOp.get(arg.type, shape=[1])
+        builder.insert(alloca)
+        variablesHeap[name] = alloca.results[0]
+
+        store = StoreOp.get(arg, variablesHeap[name], [_zero_index(builder)])
+        builder.insert(store)
+
+
+
 
 class VarOp(CodegenResult):
     type: Literal["var"] = "var"
     name: str
-    varType: VarTypeOp | None
+    varType: VarTypeOp | None = None
 
     def codegen(self, builder: Builder) -> SSAValues[OpResult[Attribute]]:
         if self.name not in variablesHeap:
@@ -41,7 +60,7 @@ class VarOp(CodegenResult):
 
     def codegenSet(self, value: SSAValue, builder: Builder) -> SSAValues[OpResult[Attribute]]:
         if self.name not in variablesHeap:
-            alloca = AllocaOp.get(value.type, shape=[1])
+            alloca = AllocOp.get(value.type, shape=[1])
             builder.insert(alloca)
             variablesHeap[self.name] = alloca.results[0]
 

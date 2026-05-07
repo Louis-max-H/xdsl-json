@@ -9,7 +9,7 @@ from xdsl.ir import Attribute, OpResult, SSAValues
 from xdsljson.structs.base import BaseValue
 from xdsljson.structs.block import codegenBlock
 from xdsljson.structs.codegen import CodegenResult
-from xdsljson.structs.op_var import VarOp
+from xdsljson.structs.op_var import VarOp, populateBlockHeap
 
 
 class FunctionOp(CodegenResult):
@@ -36,6 +36,7 @@ class FunctionOp(CodegenResult):
             arg.name_hint = var.name
 
         # codegen into function block
+        populateBlockHeap(func)
         body_block, last_value = codegenBlock(self.body, func.body.block)
 
         # add ReturnOp
