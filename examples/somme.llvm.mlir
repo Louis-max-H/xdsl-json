@@ -16,3 +16,4 @@ module {
     llvm.return %2 : i64
   }
 }
+

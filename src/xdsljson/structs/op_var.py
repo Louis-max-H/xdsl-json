@@ -11,7 +11,7 @@ from xdsl.ir import Attribute, OpResult, SSAValue, SSAValues
 from xdsl.rewriter import InsertPoint
 
 from xdsljson.structs.codegen import CodegenResult
-from xdsljson.structs.op_vartype import VarTypeOp
+from xdsljson.structs.op_vartype import VarType
 
 if TYPE_CHECKING:
     pass
@@ -25,7 +25,7 @@ def _zero_index(builder: Builder) -> SSAValue:
     builder.insert(zero)
     return zero.results[0]
 
-def populateBlockHeap(func: FuncOp):
+def populate_block_heap(func: FuncOp):
     block = func.body.block
     builder = Builder(InsertPoint.at_end(block))
 
@@ -40,13 +40,10 @@ def populateBlockHeap(func: FuncOp):
         store = StoreOp.get(arg, variablesHeap[name], [_zero_index(builder)])
         builder.insert(store)
 
-
-
-
 class VarOp(CodegenResult):
     type: Literal["var"] = "var"
     name: str
-    varType: VarTypeOp | None = None
+    varType: VarType | None = None
 
     def codegen(self, builder: Builder) -> SSAValues[OpResult[Attribute]]:
         if self.name not in variablesHeap:

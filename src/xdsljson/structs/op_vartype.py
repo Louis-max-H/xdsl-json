@@ -1,5 +1,11 @@
-from enum import Enum
+from __future__ import annotations
 
+from enum import Enum
+from typing import TYPE_CHECKING
+
+from xdsl.dialects.builtin import ArrayAttr, StringAttr
+from xdsl.dialects.llvm import LLVMStructType
+from xdsl.ir import Attribute
 from xdsl.parser import (
     AnyFloat,
     Float16Type,
@@ -10,6 +16,31 @@ from xdsl.parser import (
     IntegerType,
     Signedness,
 )
+
+if TYPE_CHECKING:
+    from xdsljson.structs.op_var import VarOp
+
+struct_table: dict[str, LLVMStructType] = {}
+
+
+def define_struct(name: str, args: list[VarOp]):
+    # create arg_types
+    arg_types: list[Attribute] = []
+    for arg in args:
+        if arg.varType is None:
+            raise ValueError("Type is mendatory for struct definition")
+        arg_types.append(vartype_codegen(arg.varType))
+
+    # create structtion
+    struct_table[name] = LLVMStructType(StringAttr(name), ArrayAttr(arg_types))
+
+
+def get_struct(name: str) -> LLVMStructType:
+    if name not in struct_table:
+        raise KeyError(
+            f"Unknown struct type {name!r}; register it with define_struct first"
+        )
+    return struct_table[name]
 
 
 class VarTypeOp(Enum):
@@ -29,7 +60,7 @@ class VarTypeOp(Enum):
     f80 = "f80"
     f128 = "f128"
 
-    def codegen(self) -> IntegerType | AnyFloat:
+    def codegen(self) -> AnyFloat | IntegerType:
         match self:
             case VarTypeOp.i64:
                 return IntegerType(64)
@@ -62,3 +93,11 @@ class VarTypeOp(Enum):
             case VarTypeOp.f128:
                 return Float128Type()
 
+
+# Chaîne qui n'est pas un membre de VarTypeOp = nom de struct (struct_table).
+VarType = VarTypeOp | str
+
+def vartype_codegen(v: VarTypeOp | str) -> AnyFloat | IntegerType | LLVMStructType:
+    if isinstance(v, str):
+        return get_struct(v)
+    return v.codegen()

@@ -9,7 +9,8 @@ from xdsl.ir import Attribute, OpResult, SSAValues
 from xdsljson.structs.base import BaseValue
 from xdsljson.structs.block import codegenBlock
 from xdsljson.structs.codegen import CodegenResult
-from xdsljson.structs.op_var import VarOp, populateBlockHeap
+from xdsljson.structs.op_var import VarOp, populate_block_heap
+from xdsljson.structs.op_vartype import vartype_codegen
 
 
 class FunctionOp(CodegenResult):
@@ -25,7 +26,7 @@ class FunctionOp(CodegenResult):
         for arg in self.args:
             if arg.varType is None:
                 raise ValueError("Type is mendatory for function argument")
-            arg_types.append(arg.varType.codegen())
+            arg_types.append(vartype_codegen(arg.varType))
 
         # create function
         func = FuncOp(self.name, (arg_types, []))
@@ -36,7 +37,7 @@ class FunctionOp(CodegenResult):
             arg.name_hint = var.name
 
         # codegen into function block
-        populateBlockHeap(func)
+        populate_block_heap(func)
         body_block, last_value = codegenBlock(self.body, func.body.block)
 
         # add ReturnOp

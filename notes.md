@@ -42,4 +42,32 @@ Historique:
     - appeller depuis cpp
     - print (IA)
 - 11/07
-    - structure
+    - structure ? Class ?
+    - Besoin d'indexes pour gérer les classes ?
+
+A faire
+- différences SSAValues et SSAValue 
+- Extern C obligatoire ? Mais pas trop un pb ?
+- ll++ ? llc++ ?
+
+
+
+# Structures ?
+class LLVMStructType(ParametrizedAttribute, TypeAttribute):
+    class ParametrizedAttribute(Attribute):
+        class Attribute(ABC):
+    class TypeAttribute(Attribute):
+
+    
+class SSAValue(IRWithUses, IRWithName, ABC, Generic[AttributeCovT]):
+    class IRWithUses(ABC):
+    class IRWithName(ABC):
+    AttributeCovT = TypeVar(
+        "AttributeCovT", bound=Attribute, covariant=True, default=Attribute
+    )
+
+
+## Differents types
+Type opaque (utilisé par des dialects ayant besoin de leurs propres types) https://mlir.llvm.org/docs/Dialects/Builtin/#opaqueattr
+Type (type qui contient un type) https://mlir.llvm.org/docs/Dialects/Builtin/#typeattr
+Unitattr ? https://mlir.llvm.org/docs/Dialects/Builtin/#unitattr
