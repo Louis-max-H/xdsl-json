@@ -9,13 +9,14 @@ from xdsl.ir import Attribute, OpResult, SSAValues
 from xdsljson.structs.base import BaseValue
 from xdsljson.structs.block import codegenBlock
 from xdsljson.structs.codegen import Codegen
-from xdsljson.structs.op_var import VarOp, populate_block_heap, variablesHeap
+from xdsljson.structs.op_var import populate_block_heap, variablesHeap
+from xdsljson.types_interface import AnyValueType
 
 
 class FunctionOp(Codegen):
-    type: Literal["function"] = "function"
+    op: Literal["function"] = "function"
     name: str
-    args: list[VarOp]
+    args: list[tuple[str, AnyValueType]]
     body: list[BaseValue]
 
     def codegen(self, builder: Builder) -> SSAValues[OpResult[Attribute]]:
@@ -23,16 +24,16 @@ class FunctionOp(Codegen):
 
         # create arg_types
         arg_types: list[Attribute] = []
-        for arg in self.args:
-            arg_types.append(arg.get_type())
+        for _name, type in self.args:
+            arg_types.append(type.get_type())
 
         # create function
         func = FuncOp(self.name, (arg_types, []))
         builder.insert(func)
 
         # set args name
-        for arg, var in zip(func.args, self.args):
-            arg.name_hint = var.name
+        for arg, (name, _type) in zip(func.args, self.args):
+            arg.name_hint = name
 
         # codegen into function block
         populate_block_heap(func)

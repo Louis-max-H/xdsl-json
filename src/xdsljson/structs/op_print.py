@@ -27,7 +27,7 @@ class PrintOp(Codegen):
     pipeline xDSL et l'objet du fichier d'appel.
     """
 
-    type: Literal["print"] = "print"
+    op: Literal["print"] = "print"
     value: BaseValue
 
     def codegen(self, builder: Builder) -> SSAValues[OpResult[Attribute]]:

@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 
 class CondOp(Codegen):
-    type: Literal["if"] = "if"
+    op: Literal["if"] = "if"
     cond: BaseValue
     thenBlock: list[BaseValue]
     elseBlock: list[BaseValue] | None = None

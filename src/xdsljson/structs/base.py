@@ -4,20 +4,19 @@ from typing import Annotated
 
 from pydantic import Field
 
-from xdsljson.structs import TypeBasic
 from xdsljson.structs.op_binary import BinaryOp
 from xdsljson.structs.op_cond import CondOp
 from xdsljson.structs.op_constant import ConstOp
-from xdsljson.structs.op_print import PrintOp
 from xdsljson.structs.op_define_struct import DefineStructOp
+from xdsljson.structs.op_print import PrintOp
 from xdsljson.structs.op_var import VarOp
 from xdsljson.structs.op_while import WhileOp
-from xdsljson.structs.type_struct import TypeStruct
+from xdsljson.types_interface import TypeFloat, TypeInt, TypeStruct
 
 # Union discriminé de toutes les opérations connues.
 BaseValue = Annotated[
     BinaryOp | ConstOp | CondOp | VarOp | WhileOp | PrintOp,
-    Field(discriminator="type"),
+    Field(discriminator="op"),
 ]
 
 
@@ -30,7 +29,8 @@ _types_namespace = {
     "WhileOp": WhileOp,
     "PrintOp": PrintOp,
     "DefineStructOp": DefineStructOp,
-    "TypeBasic": TypeBasic,
+    "TypeFloat": TypeFloat,
+    "TypeInt": TypeInt,
     "TypeStruct": TypeStruct,
 }
 

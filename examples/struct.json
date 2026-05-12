@@ -1,33 +1,21 @@
 {
   "type": "module",
-  "body": [{
-    "type": "struct",
-    "struct": {
+  "body": [
+    { "type": "struct",
       "name": "noeud",
-      "args": [{
-        "type": "var",
-          "name": "capacite",
-          "attributeType": "i64"
-        },{
-          "type": "var",
-          "name": "temperature",
-          "attributeType": "i64"
-        }
+      "args": [
+        [ "capacite", "i64"],
+        [ "temperature", "i64"]
       ]
-    }
-
+    },
     
-    },{
-      "type": "function",
+    { "type": "function",
       "name": "xdsl_main",
-      "args": [{
-        "type": "var",
-          "name": "n",
-          "attributeType": {"name": "noeud"}
-        }
+      "args": [
+          ["n", {"name": "noeud"}]
       ],
-      "body": [{
-        "type": "var",
+      "body": [
+        { "type": "var",
           "name": "n.capacite"
         }
       ]

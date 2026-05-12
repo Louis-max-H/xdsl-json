@@ -1,29 +1,32 @@
 from __future__ import annotations
 
-from typing import Literal
+from typing import Literal, cast
 
 from xdsl.builder import Builder
 from xdsl.dialects.arith import ConstantOp
-from xdsl.dialects.builtin import Float64Type, FloatAttr
+from xdsl.dialects.builtin import AnyFloat, FloatAttr, IntegerAttr, IntegerType
 from xdsl.ir import Attribute, OpResult, SSAValues
-from xdsl.parser import IntegerAttr, IntegerType
 
 from xdsljson.structs.codegen import Codegen
+from xdsljson.types_interface.type_float import TypeFloat
+from xdsljson.types_interface.type_int import TypeInt
 
 
 class ConstOp(Codegen):
     """Constant value operand."""
 
-    type: Literal["const"] = "const"
+    op: Literal["const"] = "const"
     val: float | int
-    size: int = 64
+    xdslType: TypeFloat | TypeInt  = TypeInt("i64")
 
     def codegen(self, builder: Builder) -> SSAValues[OpResult[Attribute]]:
-        if isinstance(self.val, float):
-            attr: FloatAttr[Float64Type] = FloatAttr(float(self.val), Float64Type())
+        mlir_type = self.xdslType.get_type()
+
+        if isinstance(mlir_type, TypeFloat):
+            attr = FloatAttr(float(self.val), cast(AnyFloat, mlir_type))
             const_op = ConstantOp(attr)
         else:
-            attr2: IntegerAttr = IntegerAttr(int(self.val), IntegerType(64))
+            attr2 = IntegerAttr(int(self.val), cast(IntegerType, mlir_type))
             const_op = ConstantOp(attr2)
 
         builder.insert(const_op)

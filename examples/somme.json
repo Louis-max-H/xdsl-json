@@ -1,52 +1,53 @@
-{
-  "type": "module",
-  "body":[
-    { "type": "function", "name": "xdsl_main", "args": [
-    { "type": "var", "name": "max", "attributeType": "i64"
-        }
+{ "op": "module",
+  "body": [
+    { "op": "function",
+      "name": "xdsl_main",
+      "args": [
+        ["max", "i64"]
       ],
+
       "body": [
-        {"type": "binary",
-          "op": "=",
-          "lhs":{ "type": "var", "name": "toto", "attributeType": "i64"},
-          "rhs":{"type": "const", "val": 0 }
-        },{
-          "type": "binary",
-          "op": "=",
-          "lhs":{ "type": "var", "name": "i", "attributeType": "i64"},
-          "rhs":{"type": "const", "val": 0 }
-        },{
-          "type": "while",
-          "cond":{"type": "binary",
-            "op": "<",
-            "lhs":{ "type": "var", "name": "i" },
-            "rhs":{ "type": "var", "name": "max" }
+        { "op": "binary",
+          "ope": "=",
+          "lhs": { "op": "var", "name": "toto" },
+          "rhs": { "op": "const", "val": 0 }
+        },
+        { "op": "binary",
+          "ope": "=",
+          "lhs": { "op": "var", "name": "i" },
+          "rhs": { "op": "const", "val": 0 }
+        },
+        { "op": "while",
+          "cond": { "op": "binary",
+            "ope": "<",
+            "lhs": { "op": "var", "name": "i" },
+            "rhs": { "op": "var", "name": "max" }
           },
           "thenBlock": [
-            {"type": "binary",
-              "op": "=",
-              "lhs":{ "type": "var", "name": "toto" },
-              "rhs":{"type": "binary",
-                "op": "+",
-                "lhs":{ "type": "var", "name": "toto" },
-                "rhs":{ "type": "var", "name": "i" }
+            { "op": "binary",
+              "ope": "=",
+              "lhs": { "op": "var", "name": "toto" },
+              "rhs": { "op": "binary",
+                "ope": "+",
+                "lhs": { "op": "var", "name": "toto" },
+                "rhs": { "op": "var", "name": "i" }
               }
-            },{
-              "type": "binary",
-              "op": "=",
-              "lhs":{ "type": "var", "name": "i" },
-              "rhs":{"type": "binary",
-                "op": "+",
-                "lhs":{ "type": "var", "name": "i" },
-                "rhs":{"type": "const", "val": 1 }
+            },
+            { "op": "binary",
+              "ope": "=",
+              "lhs": { "op": "var", "name": "i" },
+              "rhs": { "op": "binary",
+                "ope": "+",
+                "lhs": { "op": "var", "name": "i" },
+                "rhs": { "op": "const", "val": 1 }
               }
-            },{
-              "type": "print",
-              "value":{ "type": "var", "name": "toto" }
+            },
+            { "op": "print",
+              "value": { "op": "var", "name": "toto" }
             }
           ]
         },
-        {"type": "var", "name": "toto" }
+        { "op": "var", "name": "toto" }
       ]
     }
   ]

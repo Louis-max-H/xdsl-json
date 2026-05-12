@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 class WhileOp(Codegen):
-    type: Literal["while"] = "while"
+    op: Literal["while"] = "while"
     cond: BaseValue
     thenBlock: list[BaseValue]
 

@@ -56,15 +56,25 @@ Historique:
 - 12/05
     - On veut obtenir les types des variables sans toujours les préciser.
         - Si type est None, alors prendre le type existant dans variable heap
-        - Sinon on genere le type
-            - Si basic type, okay
-            - Si structure
-                - On cherche une définition
-                - Sinon, on génère la définition
-    - On utilise des variables pour définir les attributs, mais la génération des variable se font alors sur le tas :/
-        - Comment générer les memory view ? La succession de pointeurs ?
-            - Avoir un index(), que l'on vient chainer, renvois le couple (type, index)
-            - Ne pas utiliser var mais custom définition ?
+        - Sinon on genere le type depuis les infos données
+            - Si basic type: On génère
+            - Si structure : On cherche une définition
+        - Crash si pas d'infos
+    - Définir les attributs d'une structure
+        - On ré-utilise notre structure de variable
+        - Mais on ne veut pas "allouer" les attributs sur la heap
+        - Finallement, on ne réutilise pas le code des variables
+    - Comment gérer les accès aux attributs
+        - Chaque type possède un index_of(str) pour accéder à un de ses attributs
+            - Si struct, position de l'attribut parmis les attribus définis
+            - Si array, indice de la valeur
+            - Si variable, pas d'attribut, on crash
+        - Besoin en lecture et en écriture
+        - Besoin de savoir le type python de la variable xDSL
+            - Le type xDSL s'obtient avec le type de la valeur affectée
+            - Mais cette valeur est de type MLIR, l'information est perdue
+            - Sauf si à la création de la variable, le type est sauvegardé ?
+        - a.truc = 4 : Le RHS est de type int, a.truc aussi, mais on a besoin de savoir le type de a
     
 
 A faire

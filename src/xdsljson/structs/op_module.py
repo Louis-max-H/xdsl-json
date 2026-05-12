@@ -17,7 +17,7 @@ ModuleStatement = Annotated[DefineStructOp | FunctionOp, Field(discriminator="ty
 class ModuleJsonOp(Codegen):
     """Racine JSON de type module : enregistre les structs puis génère les fonctions."""
 
-    type: Literal["module"] = "module"
+    op: Literal["module"] = "module"
     body: list[ModuleStatement]
 
     def codegen(self, builder: Builder) -> SSAValues[OpResult[Attribute]]:

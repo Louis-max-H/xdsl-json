@@ -26,10 +26,10 @@ if TYPE_CHECKING:
 class BinaryOp(Codegen):
     """Opération binaire composée de deux opérandes."""
 
-    type: Literal["binary"] = "binary"
+    op: Literal["binary"] = "binary"
     lhs: BaseValue
     rhs: BaseValue
-    op: OperatorOp
+    ope: OperatorOp
 
     def _codegen_affectation(self, builder: Builder) -> SSAValues[OpResult[Attribute]]:
         if not isinstance(self.lhs, VarOp):
@@ -47,7 +47,7 @@ class BinaryOp(Codegen):
         # On applique terme à terme
         results: list[OpResult[Attribute]] = []
         for l_elem, r_elem in zip(lhs, rhs):
-            match self.op.value:
+            match self.ope.value:
                 case "+":
                     opAddiOp = AddiOp(l_elem, r_elem)
                     builder.insert(opAddiOp)
@@ -73,7 +73,7 @@ class BinaryOp(Codegen):
                         "==": "eq",
                         "!=": "neq"
                     }
-                    opCmpiOp = CmpiOp(l_elem, r_elem, equivalent[self.op.value])
+                    opCmpiOp = CmpiOp(l_elem, r_elem, equivalent[self.ope.value])
                     builder.insert(opCmpiOp)
                     results.append(opCmpiOp.result)
                 case "or":
@@ -96,7 +96,7 @@ class BinaryOp(Codegen):
 
     def codegen(self, builder: Builder) -> SSAValues[OpResult[Attribute]]:
 
-        if self.op.value == "=":
+        if self.ope.value == "=":
             return self._codegen_affectation(builder)
         else:
             return self._codegen_standard(builder)

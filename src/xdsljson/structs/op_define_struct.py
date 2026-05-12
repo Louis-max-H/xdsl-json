@@ -3,23 +3,24 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Literal
 
 from xdsl.builder import Builder
+from xdsl.dialects.builtin import ArrayAttr, StringAttr
 from xdsl.dialects.llvm import LLVMStructType
 from xdsl.ir import Attribute, OpResult, SSAValues
 
 from xdsljson.structs.codegen import Codegen, Typed
-from xdsljson.structs.type_basic import TypeBasic
+from xdsljson.types_interface import AnyValueType
 
 struct_table: dict[str, LLVMStructType] = {}
 struct_fields: dict[str, dict[str, tuple[Typed, int]]] = {}
 # struct_field_names[struct] = {field name: (index, type)}
 
 if TYPE_CHECKING:
-    from xdsljson.structs.type_struct import TypeStruct
+    pass
 
 class DefineStructOp(Codegen):
-    type: Literal["struct"] = "struct"
+    op: Literal["define struct"] = "define struct"
     name: str
-    args: list[tuple[TypeBasic | TypeStruct, str]]
+    args: list[tuple[AnyValueType, str]]
 
     # TODO: Need to insert it with builder ?
     def codegen(self, builder: Builder) -> SSAValues[OpResult[Attribute]]:
@@ -34,7 +35,10 @@ class DefineStructOp(Codegen):
         ]
 
         # Structure
-        struct = LLVMStructType.from_type_list(types)
+        struct = LLVMStructType(
+            StringAttr(self.name),
+            ArrayAttr(types),
+        )
         struct_table[self.name] = struct
 
         # Fields
