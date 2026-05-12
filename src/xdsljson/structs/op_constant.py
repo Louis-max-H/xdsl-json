@@ -8,10 +8,10 @@ from xdsl.dialects.builtin import Float64Type, FloatAttr
 from xdsl.ir import Attribute, OpResult, SSAValues
 from xdsl.parser import IntegerAttr, IntegerType
 
-from xdsljson.structs.codegen import CodegenResult
+from xdsljson.structs.codegen import Codegen
 
 
-class ConstOp(CodegenResult):
+class ConstOp(Codegen):
     """Constant value operand."""
 
     type: Literal["const"] = "const"

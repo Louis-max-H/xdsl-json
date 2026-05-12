@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
+from abc import ABC, ABCMeta, abstractmethod
+from enum import EnumMeta
 
 from pydantic import BaseModel, ConfigDict
 from xdsl.builder import Builder
@@ -8,8 +9,7 @@ from xdsl.ir import Attribute, OpResult, SSAValues
 
 
 # ABC : Abstract Base Class
-class CodegenResult(BaseModel, ABC):
-    """Mixin fournissant la signature commune de génération."""
+class Codegen(BaseModel, ABC):
 
     # Necessaire pour autoriser les classes externes (xDSL: Builder)
     # model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -21,6 +21,20 @@ class CodegenResult(BaseModel, ABC):
         """Génère l'opération xDSL et retourne la SSA produite.
         """
         raise NotImplementedError
+
+# ABC : Abstract Base Class
+class Typed(ABC):
+    @abstractmethod
+    def get_type(self) -> Attribute:
+        raise NotImplementedError
+
+    @abstractmethod
+    def index_of(self, index: str) -> tuple[Typed, int]:
+        raise NotImplementedError
+
+
+class ABCEnumMeta(EnumMeta, ABCMeta):
+    """Permet d'hériter à la fois de Enum et de Typed (ABC)."""
 
 
 def sameFormat(

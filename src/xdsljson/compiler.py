@@ -19,16 +19,16 @@ from xdsl.interpreters import register_implementations
 from xdsl.ir import Region
 from xdsl.rewriter import InsertPoint
 
-from xdsljson.structs.base import BaseValue
 from xdsljson.structs.op_function import FunctionOp
+from xdsljson.structs.op_module import ModuleJsonOp
 from xdsljson.structs.op_print import PRINT_INT_SYMBOL
 
 
 # ────── Json to AST ────────────────────────
-def build_sample_ast_json(data: Any) -> FunctionOp:
+def build_sample_ast_json(data: Any) -> ModuleJsonOp | FunctionOp:
     """Valide les données d'entrée et construit l'AST associé."""
 
-    adapter: TypeAdapter[FunctionOp] = TypeAdapter(BaseValue | FunctionOp)
+    adapter: TypeAdapter[ModuleJsonOp] = TypeAdapter(ModuleJsonOp)
     return adapter.validate_python(data)
 
 

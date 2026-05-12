@@ -7,13 +7,13 @@ from xdsl.dialects.scf import IfOp, YieldOp
 from xdsl.ir import Attribute, Block, OpResult, SSAValues
 
 from xdsljson.structs.block import codegenBlock
-from xdsljson.structs.codegen import CodegenResult, sameFormat
+from xdsljson.structs.codegen import Codegen, sameFormat
 
 if TYPE_CHECKING:
     from xdsljson.structs.base import BaseValue
 
 
-class CondOp(CodegenResult):
+class CondOp(Codegen):
     type: Literal["if"] = "if"
     cond: BaseValue
     thenBlock: list[BaseValue]

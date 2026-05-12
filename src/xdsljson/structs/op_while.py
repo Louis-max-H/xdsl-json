@@ -8,13 +8,13 @@ from xdsl.ir import Attribute, Block, OpResult, Region, SSAValues
 from xdsl.rewriter import InsertPoint
 
 from xdsljson.structs.block import codegenBlock
-from xdsljson.structs.codegen import CodegenResult
+from xdsljson.structs.codegen import Codegen
 
 if TYPE_CHECKING:
     from xdsljson.structs.base import BaseValue
 
 
-class WhileOp(CodegenResult):
+class WhileOp(Codegen):
     type: Literal["while"] = "while"
     cond: BaseValue
     thenBlock: list[BaseValue]

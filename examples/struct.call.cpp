@@ -3,21 +3,21 @@
 #include <iostream>
 
 extern "C" {
-    int64_t xdsl_main(int64_t arg0);
+    struct noeud {
+        int capacite;
+        int temperature;
+    };
+
+    int64_t xdsl_main(noeud arg0);
 
     void print_int(int64_t value) {
         std::printf("%ld\n", static_cast<long>(value));
     }
 }
 
-struct noeud {
-    int capacite;
-    int temperature;
-};
-
-
 int main() {
-    const int64_t result = xdsl_main(10);
-    std::cout << "xdsl_main(10) = " << result << '\n';
+    noeud n {1, 2};
+    const int64_t result = xdsl_main(n);
+    std::cout << "Value of capacite : xdsl_main(n) = " << result << '\n';
     return 0;
 }

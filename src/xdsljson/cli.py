@@ -108,11 +108,16 @@ def main(argv: list[str] | None = None) -> int:
     module.verify()
 
     # ────── xDSL to MLIR
-    file_mlir = input_path.with_suffix(".mlir")
-    file_optimized = input_path.with_suffix(".mlir.opt")
-    file_llvm_mlir = input_path.with_suffix(".llvm.mlir")
-    file_llvm = input_path.with_suffix(".ll")
+    # Source files
     file_call = input_path.with_suffix(".call.cpp")
+    # Fichiers intermédiaires (dossier build/)
+    build_dir = Path("build")
+    build_dir.mkdir(parents=True, exist_ok=True)
+    file_mlir = build_dir / input_path.with_suffix(".mlir").name
+    file_optimized = build_dir / input_path.with_suffix(".mlir.opt").name
+    file_llvm_mlir = build_dir / input_path.with_suffix(".llvm.mlir").name
+    file_llvm = build_dir / input_path.with_suffix(".ll").name
+    # Output file
     file_runnable = input_path.with_suffix(".out")
 
     # ────── xDSL to MLIR

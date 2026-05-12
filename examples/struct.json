@@ -1,46 +1,36 @@
 {
-  "type": "function",
-  "name": "xdsl_main",
-  "args":[{ "type": "var",
-      "name": "max",
-      "varType": "i64"
-    }
-  ],
+  "type": "module",
   "body": [{
-      "type": "binary", "op": "=",
-      "lhs": {"type": "var", "name": "toto", "varType": "i64"},
-      "rhs": {"type": "const", "val": 0}
-    },{
-      "type": "binary", "op": "=",
-      "lhs": {"type": "var", "name": "i", "varType": "i64"},
-      "rhs": {"type": "const", "val": 0}
-    },{
-      "type": "while",
-      "cond": {
-        "type": "binary", "op": "<",
-        "lhs": {"type": "var", "name": "i"},
-        "rhs": {"type": "var", "name": "max"}
-      },
-      "thenBlock": [{
-          "type": "binary", "op": "=",
-          "lhs": {"type": "var", "name": "toto"},
-          "rhs": {
-            "type": "binary", "op": "+",
-            "lhs": {"type": "var", "name": "toto"},
-            "rhs": {"type": "var", "name": "i"}
-          }
+    "type": "struct",
+    "struct": {
+      "name": "noeud",
+      "args": [{
+        "type": "var",
+          "name": "capacite",
+          "attributeType": "i64"
         },{
-          "type": "binary", "op": "=",
-          "lhs": {"type": "var", "name": "i"},
-          "rhs": {
-            "type": "binary", "op": "+",
-            "lhs": {"type": "var", "name": "i"},
-            "rhs": {"type": "const", "val": 1}
-          }
-        },{
-          "type": "print", "value": {"type": "var", "name": "toto"}
+          "type": "var",
+          "name": "temperature",
+          "attributeType": "i64"
         }
       ]
-    },{"type": "var","name": "toto"}
+    }
+
+    
+    },{
+      "type": "function",
+      "name": "xdsl_main",
+      "args": [{
+        "type": "var",
+          "name": "n",
+          "attributeType": {"name": "noeud"}
+        }
+      ],
+      "body": [{
+        "type": "var",
+          "name": "n.capacite"
+        }
+      ]
+    }
   ]
 }

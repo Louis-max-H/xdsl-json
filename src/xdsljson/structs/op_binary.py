@@ -15,7 +15,7 @@ from xdsl.dialects.arith import (
 )
 from xdsl.ir import Attribute, OpResult, SSAValues
 
-from xdsljson.structs.codegen import CodegenResult, sameFormat
+from xdsljson.structs.codegen import Codegen, sameFormat
 from xdsljson.structs.op_operator import OperatorOp
 from xdsljson.structs.op_var import VarOp
 
@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from xdsljson.structs.base import BaseValue
 
 
-class BinaryOp(CodegenResult):
+class BinaryOp(Codegen):
     """Opération binaire composée de deux opérandes."""
 
     type: Literal["binary"] = "binary"

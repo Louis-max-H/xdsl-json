@@ -4,18 +4,22 @@ from typing import Annotated
 
 from pydantic import Field
 
+from xdsljson.structs import TypeBasic
 from xdsljson.structs.op_binary import BinaryOp
 from xdsljson.structs.op_cond import CondOp
 from xdsljson.structs.op_constant import ConstOp
 from xdsljson.structs.op_print import PrintOp
+from xdsljson.structs.op_define_struct import DefineStructOp
 from xdsljson.structs.op_var import VarOp
 from xdsljson.structs.op_while import WhileOp
+from xdsljson.structs.type_struct import TypeStruct
 
 # Union discriminé de toutes les opérations connues.
 BaseValue = Annotated[
     BinaryOp | ConstOp | CondOp | VarOp | WhileOp | PrintOp,
     Field(discriminator="type"),
 ]
+
 
 _types_namespace = {
     "BaseValue": BaseValue,
@@ -25,6 +29,9 @@ _types_namespace = {
     "VarOp": VarOp,
     "WhileOp": WhileOp,
     "PrintOp": PrintOp,
+    "DefineStructOp": DefineStructOp,
+    "TypeBasic": TypeBasic,
+    "TypeStruct": TypeStruct,
 }
 
 # Rebuild pydantic model because of recursive definitions
@@ -34,3 +41,5 @@ CondOp.model_rebuild(_types_namespace=_types_namespace)
 VarOp.model_rebuild(_types_namespace=_types_namespace)
 WhileOp.model_rebuild(_types_namespace=_types_namespace)
 PrintOp.model_rebuild(_types_namespace=_types_namespace)
+DefineStructOp.model_rebuild(_types_namespace=_types_namespace)
+TypeStruct.model_rebuild(_types_namespace=_types_namespace)

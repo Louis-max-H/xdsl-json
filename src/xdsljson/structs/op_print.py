@@ -6,7 +6,7 @@ from xdsl.builder import Builder
 from xdsl.dialects.func import CallOp
 from xdsl.ir import Attribute, OpResult, SSAValues
 
-from xdsljson.structs.codegen import CodegenResult
+from xdsljson.structs.codegen import Codegen
 
 if TYPE_CHECKING:
     from xdsljson.structs.base import BaseValue
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 PRINT_INT_SYMBOL = "print_int"
 
 
-class PrintOp(CodegenResult):
+class PrintOp(Codegen):
     """Affiche la valeur d'une expression via la fonction externe ``print_int``.
 
     La déclaration ``func.func private @print_int(i64) -> ()`` est ajoutée

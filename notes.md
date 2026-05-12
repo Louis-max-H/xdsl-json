@@ -42,8 +42,30 @@ Historique:
     - appeller depuis cpp
     - print (IA)
 - 11/07
-    - structure ? Class ?
-    - Besoin d'indexes pour gérer les classes ?
+    - faire des structure
+        - attention au ABI *application binary interface*
+        - getelementptr
+    - etendre VarType, qui est une enum ... *creation AttributeType = StructType | VarType*
+    - création d'une structure : génération de l'Attribute correspondant
+    - accéder à un attribut
+        - différence getelementptr et LoadOp.get(memref_val, [OpConst]) ????
+        - memref.LoadOp se lower à llvm.getelementptr
+        - memref.LoadOp accepte que des SSAValue, donc pas de 0, 1, 2... possible
+        - memeref.SubviewOp.from_static_parameters, ne permet ... que des params statics, mais ce n'est pas grave ?
+        -> Utiliser memeref.SubviewOp.get()
+- 12/05
+    - On veut obtenir les types des variables sans toujours les préciser.
+        - Si type est None, alors prendre le type existant dans variable heap
+        - Sinon on genere le type
+            - Si basic type, okay
+            - Si structure
+                - On cherche une définition
+                - Sinon, on génère la définition
+    - On utilise des variables pour définir les attributs, mais la génération des variable se font alors sur le tas :/
+        - Comment générer les memory view ? La succession de pointeurs ?
+            - Avoir un index(), que l'on vient chainer, renvois le couple (type, index)
+            - Ne pas utiliser var mais custom définition ?
+    
 
 A faire
 - différences SSAValues et SSAValue 
@@ -51,6 +73,8 @@ A faire
 - ll++ ? llc++ ?
 
 
+
+# Autre
 
 # Structures ?
 class LLVMStructType(ParametrizedAttribute, TypeAttribute):
@@ -66,8 +90,35 @@ class SSAValue(IRWithUses, IRWithName, ABC, Generic[AttributeCovT]):
         "AttributeCovT", bound=Attribute, covariant=True, default=Attribute
     )
 
+AnyFloat: TypeAlias = (
+    BFloat16Type | Float16Type | Float32Type | Float64Type | Float80Type | Float128Type
+)
+class BFloat16Type(ParametrizedAttribute, _FloatType):
+class ParametrizedAttribute(Attribute):
+
+
+from_mixed_indices -> 
+class GEPOp(IRDLOperation):
+class IRDLOperation(Operation):
+class Operation(_IRNode):
+    """A generic operation. Operation definitions inherit this class."""
+
+créer  une struct a besoin de Attribute ? C'est okay
+Hummmmm, sinon utiliser le type renvoyé par ce truc ?
 
 ## Differents types
 Type opaque (utilisé par des dialects ayant besoin de leurs propres types) https://mlir.llvm.org/docs/Dialects/Builtin/#opaqueattr
 Type (type qui contient un type) https://mlir.llvm.org/docs/Dialects/Builtin/#typeattr
 Unitattr ? https://mlir.llvm.org/docs/Dialects/Builtin/#unitattr
+StridedLayoutAttr https://mlir.llvm.org/docs/Dialects/Builtin/#stridedlayoutattr
+DenseTypedElementsAttr : Raw buffer same attribut, pas optimisé, utiliser plutôt raw bytes instead https://mlir.llvm.org/docs/Dialects/Builtin/#densetypedelementsattr
+denseresourceelementsattr ? : https://mlir.llvm.org/docs/Dialects/Builtin/#denseresourceelementsattr
+densearrayattr = DenseTypedElementsAttr mais pas d'opti pour le "splat" https://mlir.llvm.org/docs/Dialects/Builtin/#densearrayattr
+DenseTypedElementsAttr https://mlir.llvm.org/docs/Dialects/Builtin/#arrayattr
+DistinctAttribut
+complex : nombre imaginaire https://mlir.llvm.org/docs/Dialects/Builtin/#complextype
+TupleType : tuple possiblement de differents types https://mlir.llvm.org/docs/Dialects/Builtin/#tupletype
+
+## ABI
+Application Binary Interface (ABI).
+https://sbaziotis.com/compilers/how-target-independent-is-your-ir.html
