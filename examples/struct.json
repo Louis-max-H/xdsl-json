@@ -1,7 +1,7 @@
 {
-  "type": "module",
+  "op": "module",
   "body": [
-    { "type": "struct",
+    { "op": "define struct",
       "name": "noeud",
       "args": [
         [ "capacite", "i64"],
@@ -9,13 +9,13 @@
       ]
     },
     
-    { "type": "function",
+    { "op": "function",
       "name": "xdsl_main",
       "args": [
           ["n", {"name": "noeud"}]
       ],
       "body": [
-        { "type": "var",
+        { "op": "var",
           "name": "n.capacite"
         }
       ]

@@ -15,7 +15,7 @@ from xdsljson.types_interface.any_value_type import AnyValueType
 class DefineStructOp(Codegen):
     op: Literal["define struct"] = "define struct"
     name: str
-    args: list[tuple[AnyValueType, str]]
+    args: list[tuple[str, AnyValueType]]
 
     # TODO: Need to insert it with builder ?
     def codegen(self, builder: Builder) -> SSAValues[OpResult[Attribute]]:
@@ -24,7 +24,7 @@ class DefineStructOp(Codegen):
 
         # Codegen attribute of typeds
         assert self.args is not None
-        types = [typed.get_type() for (typed, _typed_name) in self.args]
+        types = [typed.get_type() for (_typed_name, typed) in self.args]
 
         # Structure
         struct = LLVMStructType(
@@ -35,7 +35,7 @@ class DefineStructOp(Codegen):
 
         # Fields
         struct_fields[self.name] = {}
-        for i, (typed, typed_name) in enumerate(self.args):
+        for i, (typed_name, typed) in enumerate(self.args):
             struct_fields[self.name][typed_name] = (typed, i)
 
         # No code generated

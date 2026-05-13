@@ -51,8 +51,7 @@ Historique:
         - différence getelementptr et LoadOp.get(memref_val, [OpConst]) ????
         - memref.LoadOp se lower à llvm.getelementptr
         - memref.LoadOp accepte que des SSAValue, donc pas de 0, 1, 2... possible
-        - memeref.SubviewOp.from_static_parameters, ne permet ... que des params statics, mais ce n'est pas grave ?
-        -> Utiliser memeref.SubviewOp.get()
+        -> Utiliser memeref.SubviewOp.get(), finalement, on essaye LoadOp
 - 12/05
     - On veut obtenir les types des variables sans toujours les préciser.
         - Si type est None, alors prendre le type existant dans variable heap
@@ -65,7 +64,7 @@ Historique:
         - Mais on ne veut pas "allouer" les attributs sur la heap
         - Finallement, on ne réutilise pas le code des variables
     - Comment gérer les accès aux attributs
-        - Chaque type possède un index_of(str) pour accéder à un de ses attributs
+        - Chaque type possède un get_attribute(str) pour accéder à un de ses attributs
             - Si struct, position de l'attribut parmis les attribus définis
             - Si array, indice de la valeur
             - Si variable, pas d'attribut, on crash
@@ -77,6 +76,12 @@ Historique:
         - a.truc = 4 : Le RHS est de type int, a.truc aussi, mais on a besoin de savoir le type de a
 - 13/05
     - Ré-organisation du code et des imports
+    - SetOp
+    - Memref ne permet pas d'accéder à des attributs de structure llvm
+        - Soit Memref + llvm
+        - Soit llvm.load
+        - Soit llvm.getelementptr ou dialect ptr
+        - Soit builtin.tuple ?
     
 
 A faire

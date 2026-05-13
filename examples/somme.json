@@ -7,14 +7,12 @@
       ],
 
       "body": [
-        { "op": "binary",
-          "ope": "=",
-          "lhs": { "op": "var", "name": "toto" },
+        { "op": "set",
+          "lhs": ["toto", "i64"],
           "rhs": { "op": "const", "val": 0 }
-        },
-        { "op": "binary",
-          "ope": "=",
-          "lhs": { "op": "var", "name": "i" },
+          },
+        { "op": "set",
+          "lhs": ["i", "i64"],
           "rhs": { "op": "const", "val": 0 }
         },
         { "op": "while",
@@ -24,18 +22,16 @@
             "rhs": { "op": "var", "name": "max" }
           },
           "thenBlock": [
-            { "op": "binary",
-              "ope": "=",
-              "lhs": { "op": "var", "name": "toto" },
+            { "op": "set",
+              "lhs": ["toto", null],
               "rhs": { "op": "binary",
                 "ope": "+",
                 "lhs": { "op": "var", "name": "toto" },
                 "rhs": { "op": "var", "name": "i" }
               }
             },
-            { "op": "binary",
-              "ope": "=",
-              "lhs": { "op": "var", "name": "i" },
+            { "op": "set",
+              "lhs": ["i", null],
               "rhs": { "op": "binary",
                 "ope": "+",
                 "lhs": { "op": "var", "name": "i" },

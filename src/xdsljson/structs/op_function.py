@@ -5,11 +5,12 @@ from typing import Literal
 from xdsl.builder import Builder
 from xdsl.dialects.func import FuncOp, ReturnOp
 from xdsl.ir import Attribute, OpResult, SSAValues
+from xdsl.rewriter import InsertPoint
 
 from xdsljson.structs.base import BaseValue
 from xdsljson.structs.block import codegenBlock
 from xdsljson.structs.codegen import Codegen
-from xdsljson.structs.op_var import populate_block_heap, variablesHeap
+from xdsljson.structs.op_var import VarOp, variables_heap
 from xdsljson.types_interface.any_value_type import AnyValueType
 
 
@@ -20,7 +21,7 @@ class FunctionOp(Codegen):
     body: list[BaseValue]
 
     def codegen(self, builder: Builder) -> SSAValues[OpResult[Attribute]]:
-        variablesHeap.clear()
+        variables_heap.clear()
 
         # create arg_types
         arg_types: list[Attribute] = []
@@ -35,11 +36,16 @@ class FunctionOp(Codegen):
         for arg, (name, _type) in zip(func.args, self.args):
             arg.name_hint = name
 
-        # codegen into function block
-        populate_block_heap(func)
+        # Block Init
+        """Instanciate one memref variable per SSA argument of the function"""
+        init_builder = Builder(InsertPoint.at_end(func.body.block))
+        for (name, type), arg in zip(self.args, func.args):
+            VarOp(name=name, type=type).codegenSet(arg, init_builder)
+
+        # Block codegen
         body_block, last_value = codegenBlock(self.body, func.body.block)
 
-        # add ReturnOp
+        # Block return
         if last_value is not None:
             body_block.add_op(ReturnOp(*last_value))
         else:

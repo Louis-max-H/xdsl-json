@@ -17,7 +17,6 @@ from xdsl.ir import Attribute, OpResult, SSAValues
 
 from xdsljson.structs.codegen import Codegen, sameFormat
 from xdsljson.structs.op_operator import OperatorOp
-from xdsljson.structs.op_var import VarOp
 
 if TYPE_CHECKING:
     from xdsljson.structs.base import BaseValue
@@ -31,13 +30,8 @@ class BinaryOp(Codegen):
     rhs: BaseValue
     ope: OperatorOp
 
-    def _codegen_affectation(self, builder: Builder) -> SSAValues[OpResult[Attribute]]:
-        if not isinstance(self.lhs, VarOp):
-            raise TypeError(f"lhs of affectation should be VarOp, got {type(self.lhs)}")
-        return self.lhs.codegenSet(self.rhs.codegen(builder)[0], builder)
-
-    def _codegen_standard(self, builder: Builder) -> SSAValues[OpResult[Attribute]]:
-        lhs:  SSAValues[OpResult[Attribute]] = self.lhs.codegen(builder)
+    def codegen(self, builder: Builder) -> SSAValues[OpResult[Attribute]]:
+        lhs: SSAValues[OpResult[Attribute]] = self.lhs.codegen(builder)
         rhs: SSAValues[OpResult[Attribute]] = self.rhs.codegen(builder)
 
         # Check same format
@@ -71,7 +65,7 @@ class BinaryOp(Codegen):
                         ">": "sgt",
                         ">=": "sge",
                         "==": "eq",
-                        "!=": "neq"
+                        "!=": "neq",
                     }
                     opCmpiOp = CmpiOp(l_elem, r_elem, equivalent[self.ope.value])
                     builder.insert(opCmpiOp)
@@ -92,14 +86,3 @@ class BinaryOp(Codegen):
                     raise TypeError(f"Operator {self} not supported")
 
         return SSAValues(results)
-
-
-    def codegen(self, builder: Builder) -> SSAValues[OpResult[Attribute]]:
-
-        if self.ope.value == "=":
-            return self._codegen_affectation(builder)
-        else:
-            return self._codegen_standard(builder)
-
-
-

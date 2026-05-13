@@ -46,5 +46,5 @@ class TypeInt(Typed, Enum, metaclass=ABCEnumMeta):
             case TypeInt.I1:
                 return IntegerType(1, Signedness.SIGNLESS)
 
-    def index_of(self, index: str) -> tuple[Typed, int]:
-        raise NotImplementedError("Int can't be indexed")
+    def get_attribute(self, index: str) -> tuple[Typed, int]:
+        raise NotImplementedError("Int dont have attribute")

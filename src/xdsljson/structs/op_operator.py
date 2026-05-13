@@ -15,4 +15,3 @@ class OperatorOp(Enum):
     ltOp = "<"
     getOp = ">="
     letOp = "<="
-    affectation = "="

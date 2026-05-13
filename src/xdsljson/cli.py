@@ -102,12 +102,7 @@ def main(argv: list[str] | None = None) -> int:
     print(function_ast.model_dump())
     print("\n")
 
-    # ────── Convert to xDSL
-    module, builder = get_builder()
-    function_ast.codegen(builder)
-    module.verify()
-
-    # ────── xDSL to MLIR
+    # ────── Files paths
     # Source files
     file_call = input_path.with_suffix(".call.cpp")
     # Fichiers intermédiaires (dossier build/)
@@ -120,8 +115,19 @@ def main(argv: list[str] | None = None) -> int:
     # Output file
     file_runnable = input_path.with_suffix(".out")
 
+    # ────── Convert to xDSL
+    module, builder = get_builder()
+    function_ast.codegen(builder)
+
     # ────── xDSL to MLIR
     mlir_str = xdsl_to_mlir(module, file_mlir)
+
+    # ────── Verify
+    try:
+        module.verify()
+    except Exception:
+        print(mlir_str)
+        raise
 
     # ────── Optimize MLIR
     optimized_str = run_mlir_opt(file_mlir, file_optimized, MLIR_OPT_PASSES)

@@ -34,5 +34,5 @@ class TypeFloat(Typed, Enum, metaclass=ABCEnumMeta):
             case TypeFloat.f128:
                 return Float128Type()
 
-    def index_of(self, index: str) -> tuple[Typed, int]:
-        raise NotImplementedError("Float can't be indexed")
+    def get_attribute(self, index: str) -> tuple[Typed, int]:
+        raise NotImplementedError("Float dont have attribute")

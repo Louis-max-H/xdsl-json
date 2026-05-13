@@ -17,10 +17,10 @@ class ConstOp(Codegen):
 
     op: Literal["const"] = "const"
     val: float | int
-    xdslType: TypeFloat | TypeInt  = TypeInt("i64")
+    type: TypeFloat | TypeInt = TypeInt("i64")
 
     def codegen(self, builder: Builder) -> SSAValues[OpResult[Attribute]]:
-        mlir_type = self.xdslType.get_type()
+        mlir_type = self.type.get_type()
 
         if isinstance(mlir_type, TypeFloat):
             attr = FloatAttr(float(self.val), cast(AnyFloat, mlir_type))
