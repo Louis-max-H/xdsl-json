@@ -75,6 +75,8 @@ Historique:
             - Mais cette valeur est de type MLIR, l'information est perdue
             - Sauf si à la création de la variable, le type est sauvegardé ?
         - a.truc = 4 : Le RHS est de type int, a.truc aussi, mais on a besoin de savoir le type de a
+- 13/05
+    - Ré-organisation du code et des imports
     
 
 A faire

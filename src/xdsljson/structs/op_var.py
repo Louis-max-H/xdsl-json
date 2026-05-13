@@ -13,15 +13,16 @@ from xdsl.ir import Attribute, OpResult, SSAValue, SSAValues
 from xdsl.rewriter import InsertPoint
 
 from xdsljson.structs.codegen import Codegen
-from xdsljson.types_interface import AnyValueType
+from xdsljson.types_interface.any_value_type import AnyValueType
 
-variablesHeap: dict[str, SSAValue] = {} # variable: OpResult[MemRefType[Attribute]]
+variablesHeap: dict[str, SSAValue] = {}  # variable: OpResult[MemRefType[Attribute]]
 
 
 def _index(n: int, builder: Builder) -> SSAValue:
     op = ConstantOp.from_int_and_width(n, IndexType())
     builder.insert(op)
     return op.result
+
 
 # def _get_subview(
 #     name: str,
@@ -40,6 +41,7 @@ def _index(n: int, builder: Builder) -> SSAValue:
 #     )
 #     builder.insert(sub)
 #     return sub.result
+
 
 def populate_block_heap(func: FuncOp):
     block = func.body.block
@@ -95,10 +97,7 @@ class VarOp(Codegen):
         # index = _get_subview(, [0], builder)
         # i0 = _index_const(builder, 0)
         # op = LoadOp.get(index, [i0])
-        op = LoadOp.get(
-            variablesHeap[self.name],
-            [_index(0, builder)]
-        )
+        op = LoadOp.get(variablesHeap[self.name], [_index(0, builder)])
 
         builder.insert(op)
         return op.results
@@ -116,11 +115,7 @@ class VarOp(Codegen):
         # index = _get_subview(self.name, [0], builder)
         # i0 = _index_const(builder, 0)
         # store = StoreOp.get(value, index, [i0])
-        store = StoreOp.get(
-            value,
-            variablesHeap[self.name],
-            [_index(0, builder)]
-        )
+        store = StoreOp.get(value, variablesHeap[self.name], [_index(0, builder)])
         builder.insert(store)
 
         return store.results

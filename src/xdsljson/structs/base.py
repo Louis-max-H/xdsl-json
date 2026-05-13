@@ -11,7 +11,9 @@ from xdsljson.structs.op_define_struct import DefineStructOp
 from xdsljson.structs.op_print import PrintOp
 from xdsljson.structs.op_var import VarOp
 from xdsljson.structs.op_while import WhileOp
-from xdsljson.types_interface import TypeFloat, TypeInt, TypeStruct
+from xdsljson.types_interface.type_float import TypeFloat
+from xdsljson.types_interface.type_int import TypeInt
+from xdsljson.types_interface.type_struct import TypeStruct
 
 # Union discriminé de toutes les opérations connues.
 BaseValue = Annotated[

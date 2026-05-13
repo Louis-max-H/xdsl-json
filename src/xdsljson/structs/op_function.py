@@ -10,7 +10,7 @@ from xdsljson.structs.base import BaseValue
 from xdsljson.structs.block import codegenBlock
 from xdsljson.structs.codegen import Codegen
 from xdsljson.structs.op_var import populate_block_heap, variablesHeap
-from xdsljson.types_interface import AnyValueType
+from xdsljson.types_interface.any_value_type import AnyValueType
 
 
 class FunctionOp(Codegen):

@@ -3,10 +3,11 @@ from __future__ import annotations
 from pydantic import BaseModel, ConfigDict
 from xdsl.ir import Attribute
 
+from xdsljson.structs import struct_fields, struct_table
 from xdsljson.structs.codegen import Typed
-from xdsljson.structs.op_define_struct import struct_fields, struct_table
 
 # TODO: Array ?
+
 
 class TypeStruct(BaseModel, Typed):
     model_config = ConfigDict()
@@ -21,5 +22,3 @@ class TypeStruct(BaseModel, Typed):
         assert self.name in struct_fields.keys()
         assert index in struct_fields[self.name].keys()
         return struct_fields[self.name][index]
-
-

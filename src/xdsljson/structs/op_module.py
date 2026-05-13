@@ -11,7 +11,7 @@ from xdsljson.structs.op_define_struct import DefineStructOp
 from xdsljson.structs.op_function import FunctionOp
 
 # Définition de struct ou de function
-ModuleStatement = Annotated[DefineStructOp | FunctionOp, Field(discriminator="type")]
+ModuleStatement = Annotated[DefineStructOp | FunctionOp, Field(discriminator="op")]
 
 
 class ModuleJsonOp(Codegen):

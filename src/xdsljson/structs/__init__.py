@@ -1,19 +1,18 @@
-"""Typed structures representing the JSON expression grammar."""
+"""Grammaire JSON des opérations et registre des structs LLVM.
 
-from xdsljson.structs.op_binary import BinaryOp
-from xdsljson.structs.op_cond import CondOp
-from xdsljson.structs.op_constant import ConstOp
-from xdsljson.structs.op_operator import OperatorOp
-from xdsljson.structs.op_print import PrintOp
-from xdsljson.structs.op_var import VarOp
-from xdsljson.structs.op_while import WhileOp
+Les opérations s'importent depuis les sous-modules (ex. ``xdsljson.structs.op_binary``).
 
-__all__ = [
-    "BinaryOp",
-    "CondOp",
-    "ConstOp",
-    "OperatorOp",
-    "PrintOp",
-    "VarOp",
-    "WhileOp",
-]
+``struct_table`` et ``struct_fields`` sont remplis par ``define struct`` et lus par
+``TypeStruct`` (``xdsljson.types_interface.type_struct``).
+"""
+
+from __future__ import annotations
+
+from xdsl.dialects.llvm import LLVMStructType
+
+from .codegen import Typed
+
+struct_table: dict[str, LLVMStructType] = {}
+struct_fields: dict[str, dict[str, tuple[Typed, int]]] = {}
+
+__all__ = ["struct_fields", "struct_table"]

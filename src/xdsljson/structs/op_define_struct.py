@@ -1,21 +1,16 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import Literal
 
 from xdsl.builder import Builder
 from xdsl.dialects.builtin import ArrayAttr, StringAttr
 from xdsl.dialects.llvm import LLVMStructType
 from xdsl.ir import Attribute, OpResult, SSAValues
 
-from xdsljson.structs.codegen import Codegen, Typed
-from xdsljson.types_interface import AnyValueType
+from xdsljson.structs import struct_fields, struct_table
+from xdsljson.structs.codegen import Codegen
+from xdsljson.types_interface.any_value_type import AnyValueType
 
-struct_table: dict[str, LLVMStructType] = {}
-struct_fields: dict[str, dict[str, tuple[Typed, int]]] = {}
-# struct_field_names[struct] = {field name: (index, type)}
-
-if TYPE_CHECKING:
-    pass
 
 class DefineStructOp(Codegen):
     op: Literal["define struct"] = "define struct"
@@ -29,10 +24,7 @@ class DefineStructOp(Codegen):
 
         # Codegen attribute of typeds
         assert self.args is not None
-        types = [
-            typed.get_type()
-            for (typed, _typed_name) in self.args
-        ]
+        types = [typed.get_type() for (typed, _typed_name) in self.args]
 
         # Structure
         struct = LLVMStructType(
