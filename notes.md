@@ -82,13 +82,20 @@ Historique:
         - Soit llvm.load
         - Soit llvm.getelementptr ou dialect ptr
         - Soit builtin.tuple ?
-    
+    - Autres structure
+        - Pour un même type: Tuples / Struct
+        - Tensort --- Bufferization ---> Memref
+        - ptr ?
+    - A faire:
+        - Analyse des besoins
+        - Modane ?
+        - Tableaux memref ?
+        - Structures ?
+- 18/05
+    - 
 
-A faire
-- différences SSAValues et SSAValue 
-- Extern C obligatoire ? Mais pas trop un pb ?
-- ll++ ? llc++ ?
-
+https://discourse.llvm.org/t/codegen-dialect-overview/2723
+https://mlir.llvm.org/docs/Dialects/Vector/
 
 
 # Autre
@@ -139,3 +146,9 @@ TupleType : tuple possiblement de differents types https://mlir.llvm.org/docs/Di
 ## ABI
 Application Binary Interface (ABI).
 https://sbaziotis.com/compilers/how-target-independent-is-your-ir.html
+
+
+A faire
+- différences SSAValues et SSAValue 
+- Extern C obligatoire ? Mais pas trop un pb ?
+- ll++ ? llc++ ?
